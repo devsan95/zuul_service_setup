@@ -1,0 +1,14 @@
+2023-01-11 15:38:27,723:INFO:Connected (version 2.0, client OpenSSH_7.4)
+2023-01-11 15:38:28,879:INFO:Authentication (publickey) successful!
+2023-01-11 15:38:28,884:INFO:Cleaning existing contianers and images..
+2023-01-11 15:38:51,315:INFO:Successfully cleaned all images & containers.
+2023-01-11 15:38:51,315:INFO:Checking docker setup now..
+2023-01-11 15:38:52,153:INFO:Found existing docker. Skipping docker installation.
+2023-01-11 15:38:52,950:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
+2023-01-11 15:38:53,779:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-11 15:38:54,604:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-11 15:38:54,604:INFO:Removing existing /ephermal directory if present..
+2023-01-11 15:38:55,621:INFO:Successfully removed existing workspace.
+2023-01-11 15:38:55,621:INFO:Creating new workspace..
+2023-01-11 15:39:12,902:INFO:Successfully created new workspace.
+2023-01-11 15:39:12,902:INFO:Installing Mysql container..
