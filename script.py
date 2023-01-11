@@ -221,6 +221,7 @@ def install_mysql():
                 raise subprocess.CalledProcessError(cmd='', returncode=0)
         except subprocess.CalledProcessError:
             logger.info('No running instance of heidisql.')
+        time.sleep(5)
         subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt}"])
         timer("Create database test_zuul")
     else:
@@ -262,6 +263,7 @@ def install_merger():
     else:
         logger.error(stderr.read())
     # generate ssh key using RSA
+    logger.info("Configuring merger container.")
     logger.info("Removing existing ssh keys..")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec -w  ~/.ssh/ merger rm -f  ~/.ssh/id_rsa*")
@@ -283,11 +285,6 @@ def install_jenkins():
     command = """docker pull jenkins/jenkins:lts;docker run -itd --restart always -p 8080:8080 -p 50000:50000 --name jenkins -v /ephemeral/jenkins/:/var/jenkins_home jenkins/jenkins:lts"""
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
-        scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/hudson.plugins.gearman.GearmanPluginConfig.xml')
-        scp.put('config.xml', '/root/config.xml')
-        command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml;docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
-        (stdin, stdout, stderr) = ssh.exec_command(command)
-        (stdin, stdout, stderr) = ssh.exec_command('docker restart jenkins')
         logger.info("Successfully installed jenkins.")
     else:
         logger.error(stderr.read())
@@ -393,6 +390,36 @@ def configure_jenkins():
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed gearman plugin.")
     else:
+        logger.error(stderr.read())
+    scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/hudson.plugins.gearman.GearmanPluginConfig.xml')
+    scp.put('config.xml', '/root/config.xml')
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins rm -rf config.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins rm -rf hudson.plugins.gearman.GearmanPluginConfig.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
+    if stdout.channel.recv_exit_status():
+        logger.info("Successfully removed existing config.xml at jenkins /var/jenkins_home")
+    else:
+        logger.info("Error in removing existing config.xml at jenkins /var/jenkins_home")
+        logger.error(stderr.read())
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat hudson.plugins.gearman.GearmanPluginConfig.xml")
+    if stdout.channel.recv_exit_status():
+        logger.info("Successfully removed existing hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
+    else:
+        logger.info("Error in removing existing hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
+        logger.error(stderr.read())
+    command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml;docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
+    (stdin, stdout, stderr) = ssh.exec_command(command)
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat hudson.plugins.gearman.GearmanPluginConfig.xml")
+    if not stdout.channel.recv_exit_status():
+        logger.info("Successfully copied hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
+    else:
+        logger.info("Error in copying  hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
+        logger.error(stderr.read())
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
+    if not stdout.channel.recv_exit_status():
+        logger.info("Successfully copied hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
+    else:
+        logger.info("Error in copying  hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
         logger.error(stderr.read())
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
     logger.info("Jenkins configuration done.")
