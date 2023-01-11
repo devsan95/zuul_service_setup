@@ -211,7 +211,7 @@ def install_mysql():
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed Mysql.")
         time.sleep(4)
-        subprocess.run(["powershell", "-Command", "taskkill /im C:\\'Program Files'\\HeidiSQL\\heidisql.exe /t /f")
+        subprocess.run(["powershell", "-Command", "taskkill /im heidisql* /t /f"])
         subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt} -db={args.db}"])
     else:
         logger.error(stderr.read())
