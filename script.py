@@ -357,8 +357,8 @@ def check_status():
 
 def timer(s):
     logger.info("Refer Terminal.")
-    key = int(input(f"{s}, press 0 key once after completion : "))
     try:
+        key = int(input(f"{s}, press 0 key once after completion : "))
         if key == 0:
             print("Refer to Log file now.")
             return
