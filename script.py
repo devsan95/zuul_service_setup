@@ -129,7 +129,29 @@ def make_workspace():
         add_ssh_keys_host_machine()
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
         (stdin, stdout, stderr) = ssh.exec_command('cd /root; rm -rf config.xml job.xml hudson.plu* plugins.txt zuul.conf layout.yaml zuul_conf_merger.conf config.yaml')
+        (stdin, stdout, stderr) = ssh.exec_command('java --version')
+        if stdout.channel.recv_exit_status():
+            logger.info("Java 17 not found, installing on host machine..")
+            # https://techviewleo.com/install-java-openjdk-on-rocky-linux-centos/
+            install_java()
+        else:
+            java_ver = stdout.read()
+            if 'openjdk 17.' in str(java_ver):
+                logger.info("Java 17 found, sipping java installation on host machine..")
+            else:
+                install_java()
         logger.info("Successfully created new workspace.")
+
+
+def install_java():
+    (stdin, stdout, stderr) = ssh.exec_command('sudo yum -y install wget curl;wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz;tar xvf openjdk-17.0.2_linux-x64_bin.tar.gz;sudo mv jdk-17.0.2/ /opt/jdk-17/')
+    (stdin, stdout, stderr) = ssh.exec_command('vim ~/.bashrc;export JAVA_HOME=/opt/jdk-17;export PATH=$PATH:$JAVA_HOME/bin;source ~/.bashrc')
+    (stdin, stdout, stderr) = ssh.exec_command('echo $JAVA_HOME; java --version')
+    java_ver = stdout.read()
+    if 'openjdk 17.' in str(java_ver):
+        logger.info("Java 17 Installed successully.")
+    else:
+        logger.error("Error in Java 17 Installation.")
 
 
 def add_ssh_keys_host_machine():
@@ -458,7 +480,7 @@ def restart_services_zuul_and_merger():
 
 
 def show_zuul_demo():
-    num = random.randint(-5, 5)
+    num = random.randint(1, 1000000)
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add new_file{num};git commit -m \"added file{num}\";git push origin HEAD:refs/for/master")
     if stdout: logger.info(stdout.read())
