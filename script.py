@@ -128,7 +128,11 @@ def make_workspace():
     if not stdout.channel.recv_exit_status():
         add_ssh_keys_host_machine()
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
-        (stdin, stdout, stderr) = ssh.exec_command('cd /root; rm -rf config.xml job.xml hudson.plu* plugins.txt zuul.conf layout.yaml zuul_conf_merger.conf config.yaml')
+        (stdin, stdout, stderr) = ssh.exec_command('cd /root; rm -rf .bashrc config.xml job.xml hudson.plu* plugins.txt zuul.conf layout.yaml zuul_conf_merger.conf config.yaml')
+        if stdout:
+            logger.info(stdout.read())
+        if stderr:
+            logger.error(stderr.read())
         (stdin, stdout, stderr) = ssh.exec_command('java --version')
         if stdout.channel.recv_exit_status():
             logger.info("Java 17 not found, installing on host machine..")
@@ -144,9 +148,9 @@ def make_workspace():
 
 
 def install_java():
+    scp.put('.bashrc', '/root/.bashrc')
     (stdin, stdout, stderr) = ssh.exec_command('sudo yum -y install wget curl;wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz;tar xvf openjdk-17.0.2_linux-x64_bin.tar.gz;sudo mv jdk-17.0.2/ /opt/jdk-17/')
-    (stdin, stdout, stderr) = ssh.exec_command('vim ~/.bashrc;export JAVA_HOME=/opt/jdk-17;export PATH=$PATH:$JAVA_HOME/bin;source ~/.bashrc')
-    (stdin, stdout, stderr) = ssh.exec_command('echo $JAVA_HOME; java --version')
+    (stdin, stdout, stderr) = ssh.exec_command('java --version')
     java_ver = stdout.read()
     if 'openjdk 17.' in str(java_ver):
         logger.info("Java 17 Installed successully.")
@@ -456,6 +460,18 @@ def configure_jenkins():
         logger.info("Error in copying  hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
         logger.error(stderr.read())
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
+    # Adding jobs
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
+    if not stdout.channel.recv_exit_status():
+        command = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
+        (stdin, stdout, stderr) = ssh.exec_command(command)
+        (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
+
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < job.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job2 < job.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job3 < job.xml")
+    if not stdout.channel.recv_exit_status():
+        logger.error("TODO: Error in config.xml in jenkins")
     logger.info("Jenkins configuration done.")
 
 
