@@ -6,7 +6,6 @@ import argparse
 
 import paramiko
 from scp import SCPClient
-from db import create_db
 
 logging.basicConfig(filename="Log_file.log",
                     format='%(asctime)s:%(levelname)s:%(message)s',
@@ -27,6 +26,7 @@ parser.add_argument('-t', type=int, default=22, help='ssh port of local machine'
 parser.add_argument('-du', type=str, default='root', help='username of mysql server')
 parser.add_argument('-dp', type=str, default='5gzuul_pwd',  help='password of mysql server')
 parser.add_argument('-dt',  type=str, default='3306', help='local machine port exposed for mysql server')
+parser.add_argument('-db',  type=str, default='test_zuul', help='database name to be created in mysql server')
 
 
 args = parser.parse_args()
@@ -210,15 +210,8 @@ def install_mysql():
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed Mysql.")
-        time.sleep(10)
-        print(
-            "IN Heidisql client application, connect to linux host machine, use Network type Mariadb or Mysql(TCP/Ip), \
-                            Library libmariadb.dll, port 3306, username and password of linux host machine.")
-        app_pop_up = f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt} -db=test_zuul"
-        print(app_pop_up)
-        create_db(args.ip,args.du,args.dp,args.dt)
-        subprocess.run(["powershell", "-Command", "C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host='10.157.3.252' --library=libmariadb.dll -u='root' -p='5gzuul_pwd' --port='3306' -db='test_zuul;test_jayant;test_maria'"])
-        timer("Create database 'test_zuul' in HeidiSql application")
+        time.sleep(4)
+        subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt} -db={args.db}"])
     else:
         logger.error(stderr.read())
 
@@ -394,7 +387,7 @@ def configure_jenkins():
 
 def add_gerrit_ssh():
     logger.info(f"Now add following ssh keys to gerrit: ")
-    logger.info(SSH_KEYS)
+    [print(key, ':', value) for key, value in SSH_KEYS.items()]
     timer("Create your gerrit account at http://gerrit-code.zuulqa.dynamic.nsn-net.net/ and add ssh keys of host, merger and zuul")
 
 
