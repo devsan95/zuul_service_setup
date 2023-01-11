@@ -358,10 +358,13 @@ def check_status():
 def timer(s):
     logger.info("Refer Terminal.")
     key = int(input(f"{s}, press 0 key once after completion : "))
-    if key == 0:
-        print("Refer to Log file now.")
-        return
-    else:
+    try:
+        if key == 0:
+            print("Refer to Log file now.")
+            return
+        else:
+            timer(s)
+    except ValueError:
         timer(s)
 
 
@@ -369,8 +372,7 @@ def configure_jenkins():
     jenkins_plugins_file = "plugins.txt"
     logger.info("Jenkins Setup now..")
     logger.info("find jenkins admin password in jenkins container at /ephemeral/jenkins/secrets/initialAdminPassword file in zuul-server container")
-    (stdin, stdout, stderr) = ssh.exec_command(
-        "cat /ephemeral/jenkins/secrets/initialAdminPassword")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home/secrets jenkins cat initialAdminPassword")
     admin_password = stdout.read()
     logger.info(f"Jenkins Admin Password is :{admin_password}")
     scp.put(jenkins_plugins_file, '/root/plugins.txt')
@@ -409,8 +411,16 @@ def configure_jenkins():
         logger.error(stderr.read())
     command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml"
     (stdin, stdout, stderr) = ssh.exec_command(command)
+    if stdout: 
+        logger.info(stdout.read())
+    if stderr: 
+        logger.error(stderr.read())
     command = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
     (stdin, stdout, stderr) = ssh.exec_command(command)
+    if stdout:
+        logger.info(stdout.read())
+    if stderr: 
+        logger.error(stderr.read())
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat hudson.plugins.gearman.GearmanPluginConfig.xml")
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully copied hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
@@ -452,6 +462,8 @@ def show_zuul_demo():
     num = random.randint(-5, 5)
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add .;git commit -m \"added\";git push origin HEAD:refs/for/master")
+    if stdout: logger.info(stdout.read())
+    if stderr: logger.error(stderr.read())
     logger.info("Visit Gerrit commits -> http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
 
 
