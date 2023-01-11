@@ -286,7 +286,7 @@ def configure_zuul_conf_layout():
             "zuul.conf or layout.yaml file transfer not happened to host machine")
     else:
         logger.info(
-            " Successfully transfered zuul.conf and layout.yaml to host machine.")
+            "Successfully transfered zuul.conf and layout.yaml to host machine.")
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info(
