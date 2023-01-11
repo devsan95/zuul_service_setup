@@ -393,8 +393,8 @@ def configure_jenkins():
         logger.error(stderr.read())
     scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/hudson.plugins.gearman.GearmanPluginConfig.xml')
     scp.put('config.xml', '/root/config.xml')
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins rm -rf config.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins rm -rf hudson.plugins.gearman.GearmanPluginConfig.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv config.xml config_copy.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv hudson.plugins.gearman.GearmanPluginConfig.xml hudson.plugins.gearman.GearmanPluginConfig_copy.xml")
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
     if stdout.channel.recv_exit_status():
         logger.info("Successfully removed existing config.xml at jenkins /var/jenkins_home")
@@ -407,7 +407,9 @@ def configure_jenkins():
     else:
         logger.info("Error in removing existing hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
         logger.error(stderr.read())
-    command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml;docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
+    command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml"
+    (stdin, stdout, stderr) = ssh.exec_command(command)
+    command = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat hudson.plugins.gearman.GearmanPluginConfig.xml")
     if not stdout.channel.recv_exit_status():
@@ -438,19 +440,19 @@ def restart_services_zuul_and_merger():
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec merger supervisorctl restart all")
     time.sleep(5)
-    logger.info("Zuul services status:\n")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
-    logger.info("Merger services status:\n")
+    logger.info(f"Zuul services status:\n{stdout.read()}")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
+    logger.info(f"Merger services status:\n{stdout.read()}")
 
 
-def show_demo():
+def show_zuul_demo():
     num = random.randint(-5, 5)
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add .;git commit -m \"added\";git push origin HEAD:refs/for/master")
-    logger.info("Visit http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
+    logger.info("Visit Gerrit commits -> http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
 
 
 # Entry point of Script
@@ -468,5 +470,5 @@ check_status()
 configure_jenkins()
 add_gerrit_ssh()
 restart_services_zuul_and_merger()
-logger.info("Finally, Check Zuul dashboard at 10.157.3.252 in URL")
-show_demo()
+logger.info("Check Zuul dashboard at http://10.157.3.252/ in URL")
+show_zuul_demo()

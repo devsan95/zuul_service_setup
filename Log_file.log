@@ -1,17 +1,3 @@
-2023-01-12 02:08:29,885:INFO:Connected (version 2.0, client OpenSSH_7.4)
-2023-01-12 02:08:30,924:INFO:Authentication (publickey) successful!
-2023-01-12 02:08:30,924:INFO:Cleaning existing contianers and images..
-2023-01-12 02:08:34,264:INFO:Successfully cleaned all images & containers.
-2023-01-12 02:08:34,265:INFO:Checking docker setup now..
-2023-01-12 02:08:34,897:INFO:Found existing docker. Skipping docker installation.
-2023-01-12 02:08:35,504:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
-2023-01-12 02:08:36,250:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
-2023-01-12 02:08:36,967:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
-2023-01-12 02:08:36,967:INFO:Removing existing /ephermal directory if present..
-2023-01-12 02:08:37,678:INFO:Successfully removed existing workspace.
-2023-01-12 02:08:37,678:INFO:Creating new workspace..
-2023-01-12 02:08:53,040:INFO:Successfully created new workspace.
-2023-01-12 02:08:53,040:INFO:Installing Mysql container..
-2023-01-12 02:09:09,650:INFO:Successfully installed Mysql.
-2023-01-12 02:09:25,809:INFO:Refer Terminal.
-2023-01-12 02:09:57,617:INFO:Installing Zuul container now..
+2023-01-12 02:30:26,453:INFO:Connected (version 2.0, client OpenSSH_7.4)
+2023-01-12 02:30:27,571:INFO:Authentication (publickey) successful!
+2023-01-12 02:30:27,579:INFO:Cleaning existing contianers and images..
