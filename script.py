@@ -2,9 +2,11 @@ import logging
 import re
 import subprocess
 import time
+import argparse
 
 import paramiko
 from scp import SCPClient
+from db import create_db
 
 logging.basicConfig(filename="Log_file.log",
                     format='%(asctime)s:%(levelname)s:%(message)s',
@@ -13,11 +15,27 @@ logging.basicConfig(filename="Log_file.log",
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+parser = argparse.ArgumentParser(
+                    prog = 'Zuul service setup',
+                    description = 'Python automation script for Zuul service setup on a linux machine',
+                    epilog = 'Automates steps mentioned in https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609')
+
+parser.add_argument('ip', help='IP address of remote linux machine')
+parser.add_argument('user', help='username of remote linux machine')
+parser.add_argument('password', help='password of remote linux machine')
+parser.add_argument('-t', type=int, default=22, help='ssh port of local machine')
+parser.add_argument('-du', type=str, default='root', help='username of mysql server')
+parser.add_argument('-dp', type=str, default='5gzuul_pwd',  help='password of mysql server')
+parser.add_argument('-dt',  type=str, default='3306', help='local machine port exposed for mysql server')
+
+
+args = parser.parse_args()
+
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-ssh.connect('10.157.3.252', port=22, username='root',  # put your remote machine IP address, username and password.
-            password='Santosh@123', timeout=3)
+ssh.connect(hostname=args.ip, port=args.t, username=args.user,
+            password=args.password, timeout=5)
 
 SSH_KEYS = dict()
 
@@ -192,10 +210,14 @@ def install_mysql():
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed Mysql.")
+        time.sleep(10)
         print(
             "IN Heidisql client application, connect to linux host machine, use Network type Mariadb or Mysql(TCP/Ip), \
                             Library libmariadb.dll, port 3306, username and password of linux host machine.")
-        subprocess.Popen(r"C:\\Program Files\\HeidiSQL\\heidisql.exe")
+        app_pop_up = f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt} -db=test_zuul"
+        print(app_pop_up)
+        create_db(args.ip,args.du,args.dp,args.dt)
+        subprocess.run(["powershell", "-Command", "C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host='10.157.3.252' --library=libmariadb.dll -u='root' -p='5gzuul_pwd' --port='3306' -db='test_zuul;test_jayant;test_maria'"])
         timer("Create database 'test_zuul' in HeidiSql application")
     else:
         logger.error(stderr.read())
@@ -215,7 +237,7 @@ def filter_ssh_key(machine, output):
     output = str(output)
     result = re.search(r'ssh-rsa.+', output)
     if result.group():
-        key = str(result).split('\\n')[0]
+        key = str(result.group()).split('\\n')[0]
         SSH_KEYS[machine] = key
     else:
         logger.info(f"error in filtering ssh key for {machine}")
@@ -263,7 +285,7 @@ def install_jenkins():
 
 
 def install_gerrit():
-    logger.info("Installing gearman container now..")
+    logger.info("Installing gerrit container now..")
     command = """docker run -d --restart always --name gerrit -p 8180:8080 -p 29418:29418 -v /ephemeral/gerrit:/var/gerrit/review_site -e GERRIT_INIT_ARGS='--install-all-plugins' -e GITWEB_TYPE=gitiles -e http_proxy=http://10.158.100.1:8080 -e https_proxy=http://10.158.100.1:8080 -e AUTH_TYPE=DEVELOPMENT_BECOME_ANY_ACCOUNT -e SMTP_SERVER='webmail-emea.nsn-intra.net' -e HTTPD_LISTENURL='proxy-http://*:8080' -e WEBURL='http://gerrit.zuul.5g.dynamic.nsn-net.net' zuul-local.esisoj70.emea.nsn-net.net/zuul-images/gerrit"""
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
@@ -318,11 +340,12 @@ def configure_merger_conf_layout():
 
 
 def check_status():
+    time.sleep(3)
     command = "docker ps --format '{{ .Names }} {{ .Status }}'"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info(
-            f"Displaying overall containers.. please check.\n{format_result(stdout.read())}")
+            f"Displaying all container status above.. please check.)")
     else:
         logger.error(stderr.read())
 
@@ -371,10 +394,7 @@ def configure_jenkins():
 
 def add_gerrit_ssh():
     logger.info(f"Now add following ssh keys to gerrit: ")
-    for machine, key in SSH_KEYS.items():
-        logger.info(f"{machine} {key}")
-        logger.info(f"{machine} {key}")
-        logger.info(f"{machine} {key}")
+    logger.info(SSH_KEYS)
     timer("Create your gerrit account at http://gerrit-code.zuulqa.dynamic.nsn-net.net/ and add ssh keys of host, merger and zuul")
 
 

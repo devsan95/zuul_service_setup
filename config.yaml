@@ -1,0 +1,12 @@
+Linux_host:
+  - ip: 10.157.3.252
+  - user: root
+  - password: Santosh@123
+  - port: 22
+
+Mysql_database:
+  - ip: 10.157.3.252
+  - user: root
+  - password: 5gzuul_pwd
+  - port: 3306
+  - client_path: C:\\'Program Files'\\HeidiSQL\\heidisql.exe
