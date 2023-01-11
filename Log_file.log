@@ -1,16 +1,17 @@
-2023-01-12 03:06:25,773:INFO:Connected (version 2.0, client OpenSSH_7.4)
-2023-01-12 03:06:27,008:INFO:Authentication (publickey) successful!
-2023-01-12 03:06:27,008:INFO:Cleaning existing contianers and images..
-2023-01-12 03:06:32,033:INFO:Successfully cleaned all images & containers.
-2023-01-12 03:06:32,041:INFO:Checking docker setup now..
-2023-01-12 03:06:32,721:INFO:Found existing docker. Skipping docker installation.
-2023-01-12 03:06:33,381:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
-2023-01-12 03:06:34,148:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
-2023-01-12 03:06:34,900:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
-2023-01-12 03:06:34,900:INFO:Removing existing /ephermal directory if present..
-2023-01-12 03:06:35,669:INFO:Successfully removed existing workspace.
-2023-01-12 03:06:35,669:INFO:Creating new workspace..
-2023-01-12 03:06:54,496:INFO:Successfully created new workspace.
-2023-01-12 03:06:54,498:INFO:Installing Mysql container..
-2023-01-12 03:07:10,120:INFO:Successfully installed Mysql.
-2023-01-12 03:07:26,457:INFO:Refer Terminal.
+2023-01-12 03:28:49,989:INFO:Connected (version 2.0, client OpenSSH_7.4)
+2023-01-12 03:28:51,330:INFO:Authentication (publickey) successful!
+2023-01-12 03:28:51,330:INFO:Cleaning existing contianers and images..
+2023-01-12 03:29:18,029:INFO:Successfully cleaned all images & containers.
+2023-01-12 03:29:18,029:INFO:Checking docker setup now..
+2023-01-12 03:29:18,755:INFO:Found existing docker. Skipping docker installation.
+2023-01-12 03:29:19,503:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
+2023-01-12 03:29:20,287:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-12 03:29:21,022:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-12 03:29:21,022:INFO:Removing existing /ephermal directory if present..
+2023-01-12 03:29:21,873:INFO:Successfully removed existing workspace.
+2023-01-12 03:29:21,873:INFO:Creating new workspace..
+2023-01-12 03:29:40,167:INFO:Successfully created new workspace.
+2023-01-12 03:29:40,169:INFO:Installing Mysql container..
+2023-01-12 03:29:59,497:INFO:Successfully installed Mysql.
+2023-01-12 03:30:15,698:INFO:Refer Terminal.
+2023-01-12 03:31:36,751:INFO:Installing Zuul container now..

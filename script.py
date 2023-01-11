@@ -444,7 +444,6 @@ def add_gerrit_ssh():
 
 
 def restart_services_zuul_and_merger():
-    
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl restart all")
     (stdin, stdout, stderr) = ssh.exec_command(
