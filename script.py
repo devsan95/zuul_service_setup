@@ -3,6 +3,7 @@ import re
 import subprocess
 import time
 import argparse
+import random
 
 import paramiko
 from scp import SCPClient
@@ -12,7 +13,7 @@ logging.basicConfig(filename="Log_file.log",
                     filemode='w')
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)  # python script.py 10.157.3.252 root Santosh@123
 
 parser = argparse.ArgumentParser(
                     prog = 'Zuul service setup',
@@ -36,6 +37,8 @@ ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 ssh.connect(hostname=args.ip, port=args.t, username=args.user,
             password=args.password, timeout=5)
+
+scp = SCPClient(ssh.get_transport())
 
 SSH_KEYS = dict()
 
@@ -124,6 +127,7 @@ def make_workspace():
     (stdin, stdout, stderr) = ssh.exec_command('ls /ephemeral/zuul_mergers')
     if not stdout.channel.recv_exit_status():
         add_ssh_keys_host_machine()
+        (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
         logger.info("Successfully created new workspace.")
 
 
@@ -210,9 +214,15 @@ def install_mysql():
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed Mysql.")
-        time.sleep(4)
-        subprocess.run(["powershell", "-Command", "taskkill /im heidisql* /t /f"])
-        subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt} -db={args.db}"])
+        time.sleep(10)
+        try:
+            result = subprocess.run(["powershell", "-Command", "taskkill /im heidisql* /t /f"])
+            if result.stderr:
+                raise subprocess.CalledProcessError(cmd='', returncode=0)
+        except subprocess.CalledProcessError:
+            logger.info('No running instance of heidisql.')
+        subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt}"])
+        timer("Create database test_zuul")
     else:
         logger.error(stderr.read())
 
@@ -273,6 +283,11 @@ def install_jenkins():
     command = """docker pull jenkins/jenkins:lts;docker run -itd --restart always -p 8080:8080 -p 50000:50000 --name jenkins -v /ephemeral/jenkins/:/var/jenkins_home jenkins/jenkins:lts"""
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
+        scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/hudson.plugins.gearman.GearmanPluginConfig.xml')
+        scp.put('config.xml', '/root/config.xml')
+        command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml;docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
+        (stdin, stdout, stderr) = ssh.exec_command(command)
+        (stdin, stdout, stderr) = ssh.exec_command('docker restart jenkins')
         logger.info("Successfully installed jenkins.")
     else:
         logger.error(stderr.read())
@@ -293,7 +308,7 @@ def configure_zuul_conf_layout():
     config_file = "zuul.conf"
 
     command = "docker cp /root/layout.yaml zuul-server:/etc/zuul/layout.yaml; docker cp /root/zuul.conf zuul-server:/etc/zuul/zuul.conf"
-    scp = SCPClient(ssh.get_transport())
+    
     scp.put(layout_file, '/root/layout.yaml')
     scp.put(config_file, '/root/zuul.conf')
     (stdin, stdout, stderr) = ssh.exec_command("find /root -name zuul.conf")
@@ -314,7 +329,6 @@ def configure_zuul_conf_layout():
 
 def configure_merger_conf_layout():
     config_file_merger = "zuul_conf_merger.conf"
-    scp = SCPClient(ssh.get_transport())
     scp.put(config_file_merger, '/root/zuul_conf_merger.conf')
     (stdin, stdout, stderr) = ssh.exec_command(
         "find /root -name zuul_conf_merger.conf")
@@ -362,7 +376,6 @@ def configure_jenkins():
         "cat /ephemeral/jenkins/secrets/initialAdminPassword")
     admin_password = stdout.read()
     logger.info(f"Jenkins Admin Password is :{admin_password}")
-    scp = SCPClient(ssh.get_transport())
     scp.put(jenkins_plugins_file, '/root/plugins.txt')
     (stdin, stdout, stderr) = ssh.exec_command("find /root -name plugins.txt")
     if stdout.channel.recv_exit_status():
@@ -382,28 +395,35 @@ def configure_jenkins():
     else:
         logger.error(stderr.read())
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
-    timer("configure linux host's ip address and gearman port(4731) for Gearman under Jenkins Configure System.")
     logger.info("Jenkins configuration done.")
 
 
 def add_gerrit_ssh():
     logger.info(f"Now add following ssh keys to gerrit: ")
-    [print(key, ':', value) for key, value in SSH_KEYS.items()]
+    [logger.info(key + ' : ' + value) for key, value in SSH_KEYS.items()]
     timer("Create your gerrit account at http://gerrit-code.zuulqa.dynamic.nsn-net.net/ and add ssh keys of host, merger and zuul")
 
 
 def restart_services_zuul_and_merger():
+    
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl restart all")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec merger supervisorctl restart all")
     time.sleep(5)
+    logger.info("Zuul services status:\n")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
-    logger.info(f"Zuul services status:\n {format_result(stdout.read())}")
+    logger.info("Merger services status:\n")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
-    logger.info(f"Merger services status:\n {format_result(stdout.read())}")
+
+
+def show_demo():
+    num = random.randint(-5, 5)
+    (stdin, stdout, stderr) = ssh.exec_command(
+        f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add .;git commit -m \"added\";git push origin HEAD:refs/for/master")
+    logger.info("Visit http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
 
 
 # Entry point of Script
@@ -422,3 +442,4 @@ configure_jenkins()
 add_gerrit_ssh()
 restart_services_zuul_and_merger()
 logger.info("Finally, Check Zuul dashboard at 10.157.3.252 in URL")
+show_demo()
