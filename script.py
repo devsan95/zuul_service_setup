@@ -128,6 +128,7 @@ def make_workspace():
     if not stdout.channel.recv_exit_status():
         add_ssh_keys_host_machine()
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
+        (stdin, stdout, stderr) = ssh.exec_command('cd /root; rm -rf config.xml job.xml hudson.plu* plugins.txt zuul.conf layout.yaml zuul_conf_merger.conf config.yaml')
         logger.info("Successfully created new workspace.")
 
 
@@ -371,7 +372,6 @@ def timer(s):
 def configure_jenkins():
     jenkins_plugins_file = "plugins.txt"
     logger.info("Jenkins Setup now..")
-    logger.info("find jenkins admin password in jenkins container at /ephemeral/jenkins/secrets/initialAdminPassword file in zuul-server container")
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home/secrets jenkins cat initialAdminPassword")
     admin_password = stdout.read()
     logger.info(f"Jenkins Admin Password is :{admin_password}")
@@ -461,7 +461,7 @@ def restart_services_zuul_and_merger():
 def show_zuul_demo():
     num = random.randint(-5, 5)
     (stdin, stdout, stderr) = ssh.exec_command(
-        f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add .;git commit -m \"added\";git push origin HEAD:refs/for/master")
+        f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add new_file{num};git commit -m \"added file{num}\";git push origin HEAD:refs/for/master")
     if stdout: logger.info(stdout.read())
     if stderr: logger.error(stderr.read())
     logger.info("Visit Gerrit commits -> http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
