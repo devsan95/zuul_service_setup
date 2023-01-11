@@ -398,7 +398,7 @@ def timer(s):
 def configure_jenkins():
     jenkins_plugins_file = "plugins.txt"
     logger.info("Jenkins Setup now..")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home/secrets jenkins cat initialAdminPassword")
+    (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
     admin_password = stdout.read()
     logger.info(f"Jenkins Admin Password is :{admin_password}")
     scp.put(jenkins_plugins_file, '/root/plugins.txt')
@@ -421,8 +421,8 @@ def configure_jenkins():
         logger.error(stderr.read())
     scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/hudson.plugins.gearman.GearmanPluginConfig.xml')
     scp.put('config.xml', '/root/config.xml')
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv config.xml config_copy.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv hudson.plugins.gearman.GearmanPluginConfig.xml hudson.plugins.gearman.GearmanPluginConfig_copy.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv config.xml config_copy.xml; rm -rf config.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv hudson.plugins.gearman.GearmanPluginConfig.xml hudson.plugins.gearman.GearmanPluginConfig_copy.xml; rm -rf hudson.plugins.gearman.GearmanPluginConfig.xml")
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
     if stdout.channel.recv_exit_status():
         logger.info("Successfully removed existing config.xml at jenkins /var/jenkins_home")
@@ -441,8 +441,8 @@ def configure_jenkins():
         logger.info(stdout.read())
     if stderr: 
         logger.error(stderr.read())
-    command = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
-    (stdin, stdout, stderr) = ssh.exec_command(command)
+    command_config = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
+    (stdin, stdout, stderr) = ssh.exec_command(command_config)
     if stdout:
         logger.info(stdout.read())
     if stderr: 
