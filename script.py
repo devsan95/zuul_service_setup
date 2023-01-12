@@ -170,13 +170,13 @@ def install_zuul():
     (stdin, stdout, stderr) = ssh.exec_command(zuul_install_command)
     if stdout.channel.recv_exit_status():
         logger.info(
-            "Issue in installing zuul, check name of zuul server if already exists in running containers.")
+            "Issue in installing zuul, check command again.")
     else:
         logger.info(
             f"Installed zuul container, Container id : {stdout.read()}")
         logger.info("Configuring zuul container..")
         # generate ssh key using RSA
-        logger.info("Removing existing ssh keys..")
+        logger.info("Removing existing ssh keys in zuul..")
         (stdin, stdout, stderr) = ssh.exec_command(
             "docker exec -w  ~/.ssh/ zuul-server rm -rf  ~/.ssh/id_rsa*")
         (stdin, stdout, stderr) = ssh.exec_command(
@@ -366,7 +366,7 @@ def timer(s):
     try:
         key = int(input(f"{s}, press 0 key once after completion : "))
         if key == 0:
-            print("Refer to Log file now.")
+            print("Refer to Log file now. Refresh Logfile if logs are not printing.")
             return
         else:
             timer(s)
