@@ -398,26 +398,26 @@ def timer(s):
 
 def configure_jenkins():
     jenkins_plugins_file = "plugins.txt"
-    logger.info("Jenkins Setup now..")
-    (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
-    admin_password = stdout.read()
-    logger.info(f"Jenkins Admin Password is :{admin_password}")
+    logger.info("Configuring Jenkins now..")
+    logger.info("Copying plugins.txt from local machine to linux host")
     scp.put(jenkins_plugins_file, '/root/plugins.txt')
     (stdin, stdout, stderr) = ssh.exec_command("find /root -name plugins.txt")
     if stdout.channel.recv_exit_status():
         logger.error("plugins.txt file transfer not happened to host machine")
     else:
         logger.info(" Successfully transfered plugins.txt to host machine.")
+    logger.info("Copying plugins.txt from linux host to container.")
     command = "docker cp /root/plugins.txt jenkins:/var/jenkins_home/plugins.txt"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully copied plugins.txt to jenkins container.")
     else:
         logger.error(stderr.read())
+    logger.info("Installing Plugin Gearman in jenkins..")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec -w /var/jenkins_home/ jenkins jenkins-plugin-cli --plugins gearman-plugin:0.6.0")
     if not stdout.channel.recv_exit_status():
-        logger.info("Successfully installed gearman plugin.")
+        logger.info("Successfully installed plugin-gearman in jenkins.")
     else:
         logger.error(stderr.read())
     scp.put("hudson.plugins.gearman.GearmanPluginConfig.xml", "/root/'hudson.plugins.gearman.GearmanPluginConfig.xml'")
@@ -431,14 +431,20 @@ def configure_jenkins():
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
     # install jenkins-cli.jar
     command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
+    logger.info("Installing jenkin-cli.jar in linux host.")
     (stdin, stdout, stderr) = ssh.exec_command(command_cli)
     # Adding jobs
+    logger.info("Adding jenkins jobs..")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < job.xml")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job2 < job.xml")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job3 < job.xml")
     if not stdout.channel.recv_exit_status():
         logger.error("TODO: Error in config.xml in jenkins")
+    logger.info("Getting jenkins initial admin password for reference..")
+    (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
+    admin_password = stdout.read()
+    logger.info(f"Jenkins Admin Password is :{admin_password}")
     logger.info("Jenkins configuration done.")
 
 
