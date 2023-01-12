@@ -1,9 +1,9 @@
+import argparse
 import logging
+import random
 import re
 import subprocess
 import time
-import argparse
-import random
 
 import paramiko
 from scp import SCPClient
@@ -283,7 +283,9 @@ def filter_ssh_key(machine, output):
 
 def format_result(output):
     output = str(output)
-    result = '\n'.join(output.split("\\n"))
+    result = None
+    if output:
+        result = '\n'.join(output.split("\\n"))
     return result
 
 
@@ -417,7 +419,10 @@ def configure_jenkins():
     admin_password_1 = stdout.read()
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home/secrets/ jenkins cat initialAdminPassword")
     admin_password_2 = stdout.read()
-    logger.info(f"Jenkins Admin Password is :{admin_password_1} or {admin_password_2}")
+    if admin_password_1 == admin_password_2:
+        logger.info(f"Jenkins Admin Password is :{admin_password_1}")
+    else:
+        logger.info(f"Jenkins Admin Password is :{admin_password_1} or {admin_password_2}")
     logger.info("Jenkins configuration done.")
 
 
@@ -438,7 +443,7 @@ def restart_services_zuul_and_merger():
         "docker exec zuul-server supervisorctl status")
     logger.info(f"Zuul services status:\n{format_result(stdout.read())}")
     (stdin, stdout, stderr) = ssh.exec_command(
-        "docker exec zuul-server supervisorctl status")
+        "docker exec merger supervisorctl status")
     logger.info(f"Merger services status:\n{format_result(stdout.read())}")
 
 
