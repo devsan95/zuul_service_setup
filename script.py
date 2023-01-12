@@ -152,6 +152,13 @@ def install_java():
     (stdin, stdout, stderr) = ssh.exec_command('java --version')
     if 'openjdk 17.' in str(stdout.read()):
         logger.info("Java 17 Installed successully.")
+        (stdin, stdout, stderr) = ssh.exec_command("rm -rf openjdk* jenkins-cli*")
+        logger.info("Installaing jenkins-cli.jar file to linux host")
+        # install jenkins-cli.jar
+        command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
+        logger.info("Installing jenkin-cli.jar in linux host.")
+        (stdin, stdout, stderr) = ssh.exec_command(command_cli)
+        logger.info("Successfully installed jenkins-cli.jar to linux host")
     else:
         logger.error(f"Error in Java 17 Installation.{stderr.read()}")
 
@@ -277,7 +284,7 @@ def filter_ssh_key(machine, output):
 def format_result(output):
     output = str(output)
     result = '\n'.join(output.split("\\n"))
-    logger.info('\n'+result)
+    return result
 
 
 def install_merger():
@@ -364,7 +371,7 @@ def check_status():
 def timer(s):
     logger.info("Refer Terminal.")
     try:
-        key = int(input(f"{s}, press 0 key once after completion : "))
+        key = int(input(f"'TASK: ' + {s}, press 0 key once after completion : "))
         if key == 0:
             print("Refer to Log file now. Refresh Logfile if logs are not printing.")
             return
@@ -397,10 +404,6 @@ def configure_jenkins():
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
     logger.info("Restarting jenkins..")
     time.sleep(5)
-    # install jenkins-cli.jar
-    command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
-    logger.info("Installing jenkin-cli.jar in linux host.")
-    (stdin, stdout, stderr) = ssh.exec_command(command_cli)
     # Adding jobs
     logger.info("Adding jenkins jobs..")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
@@ -421,7 +424,8 @@ def configure_jenkins():
 def add_gerrit_ssh():
     logger.info(f"Now add following ssh keys to gerrit: ")
     [logger.info(key + ' : ' + value) for key, value in SSH_KEYS.items()]
-    timer("Create your gerrit account at http://gerrit-code.zuulqa.dynamic.nsn-net.net/ and add ssh keys of host, merger and zuul")
+    timer("""Create your gerrit account at \
+    http://gerrit-code.zuulqa.dynamic.nsn-net.net/ add ssh keys of host, merger and zuul""")
 
 
 def restart_services_zuul_and_merger():
