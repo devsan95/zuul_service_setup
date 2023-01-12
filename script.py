@@ -286,7 +286,7 @@ def format_result(output):
     result = None
     if output:
         result = '\n'.join(output.split("\\n"))
-    return result
+    return '\n' + str(result)
 
 
 def install_merger():
@@ -361,11 +361,11 @@ def configure_merger_conf_layout():
 
 def check_status():
     time.sleep(3)
-    command = "docker ps --format '{{ .Names }} {{ .Status }}'"
+    command = "docker ps --format '{{ .Names }}\t{{ .Status }}'"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info(
-            f"Displaying all container status above.. please check.)")
+            f"Displaying all container status above.. please check.{format_result(stdout.read())}")
     else:
         logger.error(stderr.read())
 
@@ -423,7 +423,21 @@ def configure_jenkins():
         logger.info(f"Jenkins Admin Password is :{admin_password_1}")
     else:
         logger.info(f"Jenkins Admin Password is :{admin_password_1} or {admin_password_2}")
-    logger.info("Jenkins configuration done.")
+    logger.info("Validating copy of config.xml to jenkins..")
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
+    if validate_copy(stdout.read()) == -1:
+        logger.error("Error in jenkins configuration, config.xml is not updated in jenkins.")
+    else:
+        logger.info("Jenkins configuration done.")
+
+
+def validate_copy(output):
+    output = str(output)
+    mat = re.search(r'<useSecurity>false</useSecurity>', output)
+    if mat:
+        return 0
+    else:
+        return -1
 
 
 def add_gerrit_ssh():
@@ -441,10 +455,10 @@ def restart_services_zuul_and_merger():
     time.sleep(5)
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
-    logger.info(f"Zuul services status:\n{format_result(stdout.read())}")
+    logger.info(f"Zuul services status:{format_result(stdout.read())}")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec merger supervisorctl status")
-    logger.info(f"Merger services status:\n{format_result(stdout.read())}")
+    logger.info(f"Merger services status:{format_result(stdout.read())}")
 
 
 def show_zuul_demo():
