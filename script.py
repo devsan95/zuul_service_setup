@@ -216,6 +216,7 @@ def install_zuul():
                                                     "docker exec -w /root zuul-server zuul-server -c /etc/zuul/zuul.conf -l /etc/zuul/layout.yaml")
             (stdin, stdout, stderr) = ssh.exec_command(
                                                     "docker exec -w /root zuul-server zuul-launcher -c /etc/zuul/zuul.conf")
+            zuul_upgrade()
             logger.info("Successfully configured zuul container.")
         else:
             logger.error(
@@ -419,56 +420,20 @@ def configure_jenkins():
         logger.info("Successfully installed gearman plugin.")
     else:
         logger.error(stderr.read())
-    scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/hudson.plugins.gearman.GearmanPluginConfig.xml')
+    scp.put("hudson.plugins.gearman.GearmanPluginConfig.xml", "/root/'hudson.plugins.gearman.GearmanPluginConfig.xml'")
     scp.put('config.xml', '/root/config.xml')
     (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv config.xml config_copy.xml; rm -rf config.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv hudson.plugins.gearman.GearmanPluginConfig.xml hudson.plugins.gearman.GearmanPluginConfig_copy.xml; rm -rf hudson.plugins.gearman.GearmanPluginConfig.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
-    if stdout.channel.recv_exit_status():
-        logger.info("Successfully removed existing config.xml at jenkins /var/jenkins_home")
-    else:
-        logger.info("Error in removing existing config.xml at jenkins /var/jenkins_home")
-        logger.error(stderr.read())
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat hudson.plugins.gearman.GearmanPluginConfig.xml")
-    if stdout.channel.recv_exit_status():
-        logger.info("Successfully removed existing hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
-    else:
-        logger.info("Error in removing existing hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
-        logger.error(stderr.read())
-    command = "docker cp /root/hudson.plugins.gearman.GearmanPluginConfig.xml jenkins:/var/jenkins_home/hudson.plugins.gearman.GearmanPluginConfig.xml"
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv 'hudson.plugins.gearman.GearmanPluginConfig.xml' 'hudson.plugins.gearman.GearmanPluginConfig_copy.xml'; rm -rf 'hudson.plugins.gearman.GearmanPluginConfig.xml'")
+    command = "docker cp /root/'hudson.plugins.gearman.GearmanPluginConfig.xml' jenkins:/var/jenkins_home/'hudson.plugins.gearman.GearmanPluginConfig.xml'"
     (stdin, stdout, stderr) = ssh.exec_command(command)
-    if stdout: 
-        logger.info(stdout.read())
-    if stderr: 
-        logger.error(stderr.read())
     command_config = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
     (stdin, stdout, stderr) = ssh.exec_command(command_config)
-    if stdout:
-        logger.info(stdout.read())
-    if stderr: 
-        logger.error(stderr.read())
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat hudson.plugins.gearman.GearmanPluginConfig.xml")
-    if not stdout.channel.recv_exit_status():
-        logger.info("Successfully copied hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
-    else:
-        logger.info("Error in copying  hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
-        logger.error(stderr.read())
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
-    if not stdout.channel.recv_exit_status():
-        logger.info("Successfully copied hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
-    else:
-        logger.info("Error in copying  hudson.plugins.gearman.GearmanPluginConfig.xml at jenkins /var/jenkins_home")
-        logger.error(stderr.read())
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
+    # install jenkins-cli.jar
+    command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
+    (stdin, stdout, stderr) = ssh.exec_command(command_cli)
     # Adding jobs
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
-    if not stdout.channel.recv_exit_status():
-        command = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
-        (stdin, stdout, stderr) = ssh.exec_command(command)
-        command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
-        (stdin, stdout, stderr) = ssh.exec_command(command_cli)
-        (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
-
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < job.xml")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job2 < job.xml")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job3 < job.xml")
@@ -491,10 +456,10 @@ def restart_services_zuul_and_merger():
     time.sleep(5)
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
-    logger.info(f"Zuul services status:\n{stdout.read()}")
+    logger.info(f"Zuul services status:\n{format_result(stdout.read())}")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec zuul-server supervisorctl status")
-    logger.info(f"Merger services status:\n{stdout.read()}")
+    logger.info(f"Merger services status:\n{format_result(stdout.read())}")
 
 
 def show_zuul_demo():
@@ -502,8 +467,23 @@ def show_zuul_demo():
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add new_file{num};git commit -m \"added file{num}\";git push origin HEAD:refs/for/master")
     if stdout: logger.info(stdout.read())
-    if stderr: logger.error(stderr.read())
+    if stderr: logger.error(str(stderr.read())+'\n' + "POSSIBLE GERRIT ISSUE, PLEASE CHECK.")
     logger.info("Visit Gerrit commits -> http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
+
+
+def zuul_upgrade():
+    logger.info("Chekcing for Zuul upgrade..")
+    (stdin, stdout, stderr) = ssh.exec_command(
+        f"pip list | grep zuul")
+    if not stdout.channel.recv_exit_status():
+        logger.info(f"Zuul Version is {str(stdout.read())}")
+        if '2.' in str(stdout.read()):
+            logger.info("Zuul is up to date.")
+        else:
+            logger.info("Upgrading Zuul to latest verison..")
+            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git pull --rebase")
+            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git checkout tags/2.0.1")
+            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/ zuul-server pip install .")
 
 
 # Entry point of Script
