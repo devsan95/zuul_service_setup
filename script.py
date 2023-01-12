@@ -130,8 +130,9 @@ def make_workspace():
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
         (stdin, stdout, stderr) = ssh.exec_command('rm -rf ~/folder ~/.bashrc; mkdir ~/folder;chmod 777 ~/folder')
         logger.info("Copying config files from local machine to linux host..")
-        scp.put('files', '/root/folder', recursive=True, preserve_times=True)
-        (stdin, stdout, stderr) = ssh.exec_command('cp ~/folder/.bashrc ~')
+        scp.put('folder', '/root', recursive=True, preserve_times=True)
+        (stdin, stdout, stderr) = ssh.exec_command('\\cp /root/folder/.bashrc /root')
+        time.sleep(3)
         logger.info("Checking Java in linux host..")
         (stdin, stdout, stderr) = ssh.exec_command('java --version')
         if stdout.channel.recv_exit_status():
@@ -139,9 +140,9 @@ def make_workspace():
             # https://techviewleo.com/install-java-openjdk-on-rocky-linux-centos/
             install_java()
         else:
-            java_ver = stdout.read()
-            if 'openjdk 17.' in str(java_ver):
+            if 'openjdk 17.' in str(stdout.read()):
                 logger.info("Java 17 found, sipping java installation on host machine..")
+                exit(-1)
             else:
                 install_java()
         logger.info("Successfully created new workspace.")
