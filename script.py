@@ -142,7 +142,6 @@ def make_workspace():
         else:
             if 'openjdk 17.' in str(stdout.read()):
                 logger.info("Java 17 found, sipping java installation on host machine..")
-                exit(-1)
             else:
                 install_java()
         logger.info("Successfully created new workspace.")
