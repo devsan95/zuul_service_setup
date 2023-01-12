@@ -465,6 +465,8 @@ def configure_jenkins():
     if not stdout.channel.recv_exit_status():
         command = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
         (stdin, stdout, stderr) = ssh.exec_command(command)
+        command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
+        (stdin, stdout, stderr) = ssh.exec_command(command_cli)
         (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
 
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < job.xml")

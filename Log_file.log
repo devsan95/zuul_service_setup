@@ -1,0 +1,12 @@
+2023-01-12 05:33:11,171:INFO:Connected (version 2.0, client OpenSSH_7.4)
+2023-01-12 05:33:12,312:INFO:Authentication (publickey) successful!
+2023-01-12 05:33:12,313:INFO:Cleaning existing contianers and images..
+2023-01-12 05:33:21,867:INFO:Successfully cleaned all images & containers.
+2023-01-12 05:33:21,867:INFO:Checking docker setup now..
+2023-01-12 05:33:22,579:INFO:Found existing docker. Skipping docker installation.
+2023-01-12 05:33:23,271:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
+2023-01-12 05:33:24,062:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-12 05:33:24,824:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-12 05:33:24,824:INFO:Removing existing /ephermal directory if present..
+2023-01-12 05:33:25,569:INFO:Successfully removed existing workspace.
+2023-01-12 05:33:25,569:INFO:Creating new workspace..
