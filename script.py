@@ -128,12 +128,11 @@ def make_workspace():
     if not stdout.channel.recv_exit_status():
         add_ssh_keys_host_machine()
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
-        (stdin, stdout, stderr) = ssh.exec_command('cd /root; rm -rf .bashrc config.xml job.xml hudson.plu* plugins.txt zuul.conf layout.yaml zuul_conf_merger.conf config.yaml')
-        if stdout:
-            logger.info(stdout.read())
-        if stderr:
-            logger.error(stderr.read())
-        scp.put('.bashrc', '/root/.bashrc')
+        (stdin, stdout, stderr) = ssh.exec_command('rm -rf ~/folder ~/.bashrc; mkdir ~/folder;chmod 777 ~/folder')
+        logger.info("Copying config files from local machine to linux host..")
+        scp.put('files', '/root/folder', recursive=True, preserve_times=True)
+        (stdin, stdout, stderr) = ssh.exec_command('cp ~/folder/.bashrc ~')
+        logger.info("Checking Java in linux host..")
         (stdin, stdout, stderr) = ssh.exec_command('java --version')
         if stdout.channel.recv_exit_status():
             logger.info("Java 17 not found, installing on host machine..")
@@ -155,11 +154,11 @@ def install_java():
     if 'openjdk 17.' in str(java_ver):
         logger.info("Java 17 Installed successully.")
     else:
-        logger.error("Error in Java 17 Installation.")
+        logger.error(f"Error in Java 17 Installation.{stderr.read()}")
 
 
 def add_ssh_keys_host_machine():
-    (stdin, stdout, stderr) = ssh.exec_command("rm -f  ~/.ssh/new_id_rsa*")
+    (stdin, stdout, stderr) = ssh.exec_command("rm -rf  ~/.ssh/new_id_rsa*")
     (stdin, stdout, stderr) = ssh.exec_command(
         "ssh-keygen -t rsa -f ~/.ssh/new_id_rsa -N ''")
     (stdin, stdout, stderr) = ssh.exec_command("cat ~/.ssh/new_id_rsa.pub")
@@ -180,7 +179,7 @@ def install_zuul():
         # generate ssh key using RSA
         logger.info("Removing existing ssh keys..")
         (stdin, stdout, stderr) = ssh.exec_command(
-            "docker exec -w  ~/.ssh/ zuul-server rm -f  ~/.ssh/id_rsa*")
+            "docker exec -w  ~/.ssh/ zuul-server rm -rf  ~/.ssh/id_rsa*")
         (stdin, stdout, stderr) = ssh.exec_command(
             "docker exec -w  ~/.ssh/ zuul-server ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''")
         (stdin, stdout, stderr) = ssh.exec_command(
@@ -294,7 +293,7 @@ def install_merger():
     logger.info("Configuring merger container.")
     logger.info("Removing existing ssh keys..")
     (stdin, stdout, stderr) = ssh.exec_command(
-        "docker exec -w  ~/.ssh/ merger rm -f  ~/.ssh/id_rsa*")
+        "docker exec -w  ~/.ssh/ merger rm -rf  ~/.ssh/id_rsa*")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec -w  ~/.ssh/ merger ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''")
     (stdin, stdout, stderr) = ssh.exec_command(
@@ -329,20 +328,8 @@ def install_gerrit():
 
 
 def configure_zuul_conf_layout():
-    layout_file = "layout.yaml"
-    config_file = "zuul.conf"
-
-    command = "docker cp /root/layout.yaml zuul-server:/etc/zuul/layout.yaml; docker cp /root/zuul.conf zuul-server:/etc/zuul/zuul.conf"
-    
-    scp.put(layout_file, '/root/layout.yaml')
-    scp.put(config_file, '/root/zuul.conf')
-    (stdin, stdout, stderr) = ssh.exec_command("find /root -name zuul.conf")
-    if stdout.channel.recv_exit_status():
-        logger.error(
-            "zuul.conf or layout.yaml file transfer not happened to host machine")
-    else:
-        logger.info(
-            "Successfully transfered zuul.conf and layout.yaml to host machine.")
+    logger.info("Working on Copying Zuul.conf and layout to zuul container.")
+    command = "docker cp /root/folder/layout.yaml zuul-server:/etc/zuul/layout.yaml; docker cp /root/folder/zuul.conf zuul-server:/etc/zuul/zuul.conf"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info(
@@ -353,16 +340,8 @@ def configure_zuul_conf_layout():
 
 
 def configure_merger_conf_layout():
-    config_file_merger = "zuul_conf_merger.conf"
-    scp.put(config_file_merger, '/root/zuul_conf_merger.conf')
-    (stdin, stdout, stderr) = ssh.exec_command(
-        "find /root -name zuul_conf_merger.conf")
-    if stdout.channel.recv_exit_status():
-        logger.error("zuul_conf_merger file transfer not happened")
-    else:
-        logger.info(" Successfully transfered zuul_conf_merger file.")
-
-    command = "docker cp /root/layout.yaml merger:/etc/zuul/layout.yaml; docker cp /root/zuul_conf_merger.conf merger:/etc/zuul/zuul.conf"
+    logger.info("Working on copying zuul.conf and layout.yaml for merger container.")
+    command = "docker cp /root/folder/layout.yaml merger:/etc/zuul/layout.yaml; docker cp /root/folder/zuul_conf_merger.conf merger:/etc/zuul/zuul.conf"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info(
@@ -397,17 +376,9 @@ def timer(s):
 
 
 def configure_jenkins():
-    jenkins_plugins_file = "plugins.txt"
     logger.info("Configuring Jenkins now..")
-    logger.info("Copying plugins.txt from local machine to linux host")
-    scp.put(jenkins_plugins_file, '/root/plugins.txt')
-    (stdin, stdout, stderr) = ssh.exec_command("find /root -name plugins.txt")
-    if stdout.channel.recv_exit_status():
-        logger.error("plugins.txt file transfer not happened to host machine")
-    else:
-        logger.info(" Successfully transfered plugins.txt to host machine.")
     logger.info("Copying plugins.txt from linux host to container.")
-    command = "docker cp /root/plugins.txt jenkins:/var/jenkins_home/plugins.txt"
+    command = "docker cp /root/folder/plugins.txt jenkins:/var/jenkins_home/plugins.txt"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully copied plugins.txt to jenkins container.")
@@ -420,15 +391,13 @@ def configure_jenkins():
         logger.info("Successfully installed plugin-gearman in jenkins.")
     else:
         logger.error(stderr.read())
-    scp.put("hudson.plugins.gearman.GearmanPluginConfig.xml", "/root/'hudson.plugins.gearman.GearmanPluginConfig.xml'")
-    scp.put('config.xml', '/root/config.xml')
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv config.xml config_copy.xml; rm -rf config.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins mv 'hudson.plugins.gearman.GearmanPluginConfig.xml' 'hudson.plugins.gearman.GearmanPluginConfig_copy.xml'; rm -rf 'hudson.plugins.gearman.GearmanPluginConfig.xml'")
-    command = "docker cp /root/'hudson.plugins.gearman.GearmanPluginConfig.xml' jenkins:/var/jenkins_home/'hudson.plugins.gearman.GearmanPluginConfig.xml'"
+    command = "docker cp /root/folder/'hudson.plugins.gearman.GearmanPluginConfig.xml' jenkins:/var/jenkins_home/'hudson.plugins.gearman.GearmanPluginConfig.xml'"
     (stdin, stdout, stderr) = ssh.exec_command(command)
-    command_config = "docker cp /root/config.xml jenkins:/var/jenkins_home/config.xml"
+    command_config = "docker cp /root/folder/config.xml jenkins:/var/jenkins_home/config.xml"
     (stdin, stdout, stderr) = ssh.exec_command(command_config)
     (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
+    logger.info("Restarting jenkins..")
+    time.sleep(5)
     # install jenkins-cli.jar
     command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
     logger.info("Installing jenkin-cli.jar in linux host.")
@@ -436,15 +405,17 @@ def configure_jenkins():
     # Adding jobs
     logger.info("Adding jenkins jobs..")
     (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < job.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job2 < job.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job3 < job.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < /root/folder/job.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job2 < /root/folder/job.xml")
+    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job3 < /root/folder/job.xml")
     if not stdout.channel.recv_exit_status():
         logger.error("TODO: Error in config.xml in jenkins")
     logger.info("Getting jenkins initial admin password for reference..")
     (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
-    admin_password = stdout.read()
-    logger.info(f"Jenkins Admin Password is :{admin_password}")
+    admin_password_1 = stdout.read()
+    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home/secrets/ jenkins cat initialAdminPassword")
+    admin_password_2 = stdout.read()
+    logger.info(f"Jenkins Admin Password is :{admin_password_1} or {admin_password_2}")
     logger.info("Jenkins configuration done.")
 
 
