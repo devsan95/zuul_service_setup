@@ -400,7 +400,8 @@ def configure_jenkins():
     time.sleep(5)
     # Adding jobs
     logger.info("Adding jenkins jobs..")
-    server = jenkins.Jenkins('http://localhost:8080', username='admin', password='e90f9f392aad4b4fa1f75bb62c90768c', timeout=5)
+    server = jenkins.Jenkins('http://localhost:8080', username='admin', password=jenkins_admin_password, timeout=10)
+    # https://python-jenkins.readthedocs.io/en/latest/
     logger.info("Jenkins configuration done.")
 
 
