@@ -1,17 +1,71 @@
-2023-01-12 17:40:36,893:INFO:Connected (version 2.0, client OpenSSH_7.4)
-2023-01-12 17:40:43,796:INFO:Authentication (publickey) successful!
-2023-01-12 17:40:43,797:INFO:Cleaning existing contianers and images..
-2023-01-12 17:41:05,856:INFO:Successfully cleaned all images & containers.
-2023-01-12 17:41:05,857:INFO:Checking docker setup now..
-2023-01-12 17:41:06,368:INFO:Found existing docker. Skipping docker installation.
-2023-01-12 17:41:06,836:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
-2023-01-12 17:41:07,440:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
-2023-01-12 17:41:08,043:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
-2023-01-12 17:41:08,043:INFO:Removing existing /ephermal directory if present..
-2023-01-12 17:41:08,762:INFO:Successfully removed existing workspace.
-2023-01-12 17:41:08,763:INFO:Creating new workspace..
-2023-01-12 17:41:20,520:INFO:Copying config files from local machine to linux host..
-2023-01-12 17:41:30,134:INFO:Checking Java in linux host..
-2023-01-12 17:41:30,493:INFO:Java 17 found, sipping java installation on host machine..
-2023-01-12 17:41:30,493:INFO:Successfully created new workspace.
-2023-01-12 17:41:30,493:INFO:Installing Mysql container..
+2023-01-13 15:37:50,568:INFO:Connected (version 2.0, client OpenSSH_7.4)
+2023-01-13 15:37:51,698:INFO:Authentication (publickey) successful!
+2023-01-13 15:37:51,699:INFO:Cleaning existing contianers and images..
+2023-01-13 15:38:14,530:INFO:Successfully cleaned all images & containers.
+2023-01-13 15:38:14,532:INFO:Checking docker setup now..
+2023-01-13 15:38:15,249:INFO:Found existing docker. Skipping docker installation.
+2023-01-13 15:38:15,915:INFO:Logging in Docker registries esisoj70 and artifactory-espoo1..
+2023-01-13 15:38:16,753:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-13 15:38:17,516:INFO:Log in status: b'Authenticating with existing credentials...\nLogin Succeeded\n'
+2023-01-13 15:38:17,517:INFO:Removing existing /ephermal directory if present..
+2023-01-13 15:38:18,508:INFO:Successfully removed existing workspace.
+2023-01-13 15:38:18,510:INFO:Creating new workspace..
+2023-01-13 15:38:37,263:INFO:Copying config files from local machine to linux host..
+2023-01-13 15:38:51,026:INFO:Checking Java in linux host..
+2023-01-13 15:38:51,599:INFO:Java 17 found, sipping java installation on host machine..
+2023-01-13 15:38:51,600:INFO:Successfully created new workspace.
+2023-01-13 15:38:51,602:INFO:Installing Mysql container..
+2023-01-13 15:39:06,116:INFO:Successfully installed Mysql.
+2023-01-13 15:39:24,454:INFO:Refer Terminal.
+2023-01-13 15:41:08,543:INFO:Installing Zuul container now..
+2023-01-13 15:42:14,502:INFO:Installed zuul container, Container id : b'42359d843e65b39fbcdc227a5282eb567e1a88fef9b566ce5fe35dfa57a0ca4c\n'
+2023-01-13 15:42:14,502:INFO:Configuring zuul container..
+2023-01-13 15:42:14,502:INFO:Removing existing ssh keys in zuul..
+2023-01-13 15:42:19,430:INFO:b''
+2023-01-13 15:42:20,691:INFO:b'Found existing installation: zuul 1.7.7.dev1\nUninstalling zuul-1.7.7.dev1:\n  Successfully uninstalled zuul-1.7.7.dev1\n'
+2023-01-13 15:42:24,272:INFO:b'Processing /root/zuul\nRequirement already satisfied: jenkins-job-builder<2.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.6.2)\nRequirement already satisfied: pbr>=1.1.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (5.5.1)\nRequirement already satisfied: PyYAML>=3.1.0 in /usr/lib64/python2.7/site-packages (from zuul==1.7.7.dev1) (5.4.1)\nRequirement already satisfied: paramiko<2.0.0,>=1.8.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.18.5)\nRequirement already satisfied: gitdb2==2.0.6 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.0.6)\nRequirement already satisfied: GitPython<2.1.2,>=0.3.3 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.1.1)\nRequirement already satisfied: ordereddict in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.1)\nRequirement already satisfied: python-daemon<2.1.0,>=2.0.4 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.0.6)\nRequirement already satisfied: extras in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.0.0)\nRequirement already satisfied: statsd<3.0,>=1.0.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.1.2)\nRequirement already satisfied: voluptuous>=0.11.1 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.12.1)\nRequirement already satisfied: gear<1.0.0,>=0.5.7 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.15.1)\nRequirement already satisfied: apscheduler>=3.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (3.7.0)\nRequirement already satisfied: PrettyTable<0.8,>=0.6 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.7.2)\nRequirement already satisfied: babel>=1.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.9.1)\nRequirement already satisfied: six>=1.6.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.16.0)\nRequirement already satisfied: sqlalchemy in /usr/lib64/python2.7/site-packages (from zuul==1.7.7.dev1) (1.4.15)\nRequirement already satisfied: alembic in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.5.8)\nRequirement already satisfied: requests in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.25.1)\nRequirement already satisfied: cachetools in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (3.1.1)\nRequirement already satisfied: pycrypto in /usr/lib64/python2.7/site-packages (from zuul==1.7.7.dev1) (2.6.1)\nRequirement already satisfied: prometheus_client in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.10.1)\nRequirement already satisfied: monotonic in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.6)\nRequirement already satisfied: ruamel.yaml in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.16.13)\nRequirement already satisfied: arrow==0.15.8 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.15.8)\nRequirement already satisfied: tzlocal in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.1)\nRequirement already satisfied: cherrypy in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (17.4.2)\nRequirement already satisfied: ws4py in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.5.1)\nRequirement already satisfied: routes in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.5.1)\nRequirement already satisfied: cheroot!=8.1.*,!=8.2.*,!=8.3.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (8.5.2)\nRequirement already satisfied: python-jenkins>=0.4.8 in /usr/lib/python2.7/site-packages (from jenkins-job-builder<2.0->zuul==1.7.7.dev1) (1.7.0)\nRequirement already satisfied: ecdsa<2.0,>=0.11 in /usr/lib/python2.7/site-packages (from paramiko<2.0.0,>=1.8.0->zuul==1.7.7.dev1) (0.16.1)\nRequirement already satisfied: smmap2>=2.0.0 in /usr/lib/python2.7/site-packages (from gitdb2==2.0.6->zuul==1.7.7.dev1) (3.0.1)\nRequirement already satisfied: setuptools in /usr/lib/python2.7/site-packages (from python-daemon<2.1.0,>=2.0.4->zuul==1.7.7.dev1) (44.1.1)\nRequirement already satisfied: docutils in /usr/lib/python2.7/site-packages (from python-daemon<2.1.0,>=2.0.4->zuul==1.7.7.dev1) (0.17.1)\nRequirement already satisfied: lockfile>=0.10 in /usr/lib/python2.7/site-packages (from python-daemon<2.1.0,>=2.0.4->zuul==1.7.7.dev1) (0.12.2)\nRequirement already satisfied: funcsigs; python_version < "3.5" in /usr/lib/python2.7/site-packages (from apscheduler>=3.0->zuul==1.7.7.dev1) (1.0.2)\nRequirement already satisfied: futures; python_version == "2.7" in /usr/lib/python2.7/site-packages (from apscheduler>=3.0->zuul==1.7.7.dev1) (3.3.0)\nRequirement already satisfied: pytz in /usr/lib/python2.7/site-packages (from apscheduler>=3.0->zuul==1.7.7.dev1) (2021.1)\nRequirement already satisfied: importlib-metadata; python_version < "3.8" in /usr/lib/python2.7/site-packages (from sqlalchemy->zuul==1.7.7.dev1) (2.1.1)\nRequirement already satisfied: python-dateutil in /usr/lib/python2.7/site-packages (from alembic->zuul==1.7.7.dev1) (1.5)\nRequirement already satisfied: python-editor>=0.3 in /usr/lib/python2.7/site-packages (from alembic->zuul==1.7.7.dev1) (1.0.4)\nRequirement already satisfied: Mako in /usr/lib/python2.7/site-packages (from alembic->zuul==1.7.7.dev1) (1.1.4)\nRequirement already satisfied: chardet<5,>=3.0.2 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (4.0.0)\nRequirement already satisfied: urllib3<1.27,>=1.21.1 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (1.26.4)\nRequirement already satisfied: idna<3,>=2.5 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (2.10)\nRequirement already satisfied: certifi>=2017.4.17 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (2020.12.5)\nRequirement already satisfied: ruamel.ordereddict; platform_python_implementation == "CPython" and python_version <= "2.7" in /usr/lib64/python2.7/site-packages (from ruamel.yaml->zuul==1.7.7.dev1) (0.4.15)\nRequirement already satisfied: ruamel.yaml.clib>=0.1.2; platform_python_implementation == "CPython" and python_version < "3.10" in /usr/lib64/python2.7/site-packages (from ruamel.yaml->zuul==1.7.7.dev1) (0.2.2)\nRequirement already satisfied: backports.functools-lru-cache>=1.2.1; python_version == "2.7" in /usr/lib/python2.7/site-packages (from arrow==0.15.8->zuul==1.7.7.dev1) (1.6.4)\nRequirement already satisfied: portend>=2.1.1 in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (2.6)\nRequirement already satisfied: more-itertools in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (5.0.0)\nRequirement already satisfied: zc.lockfile in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (2.0)\nRequirement already satisfied: contextlib2 in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (0.6.0.post1)\nRequirement already satisfied: repoze.lru>=0.3 in /usr/lib/python2.7/site-packages (from routes->zuul==1.7.7.dev1) (0.7)\nRequirement already satisfied: selectors2; python_version < "3.4" in /usr/lib/python2.7/site-packages (from cheroot!=8.1.*,!=8.2.*,!=8.3.0->zuul==1.7.7.dev1) (2.0.2)\nRequirement already satisfied: jaraco.functools in /usr/lib/python2.7/site-packages (from cheroot!=8.1.*,!=8.2.*,!=8.3.0->zuul==1.7.7.dev1) (2.0)\nRequirement already satisfied: multi-key-dict in /usr/lib/python2.7/site-packages (from python-jenkins>=0.4.8->jenkins-job-builder<2.0->zuul==1.7.7.dev1) (2.0.3)\nRequirement already satisfied: smmap>=3.0.1 in /usr/lib/python2.7/site-packages (from smmap2>=2.0.0->gitdb2==2.0.6->zuul==1.7.7.dev1) (3.0.5)\nRequirement already satisfied: pathlib2; python_version < "3" in /usr/lib/python2.7/site-packages (from importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (2.3.5)\nRequirement already satisfied: zipp>=0.5 in /usr/lib/python2.7/site-packages (from importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (1.2.0)\nRequirement already satisfied: configparser>=3.5; python_version < "3" in /usr/lib/python2.7/site-packages (from importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (4.0.2)\nRequirement already satisfied: MarkupSafe>=0.9.2 in /usr/lib64/python2.7/site-packages (from Mako->alembic->zuul==1.7.7.dev1) (1.1.1)\nRequirement already satisfied: tempora>=1.8 in /usr/lib/python2.7/site-packages (from portend>=2.1.1->cherrypy->zuul==1.7.7.dev1) (1.14.1)\nRequirement already satisfied: scandir; python_version < "3.5" in /usr/lib64/python2.7/site-packages (from pathlib2; python_version < "3"->importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (1.10.0)\nBuilding wheels for collected packages: zuul\n  Building wheel for zuul (setup.py): started\n  Building wheel for zuul (setup.py): finished with status \'done\'\n  Created wheel for zuul: filename=zuul-1.7.7.dev1-py2-none-any.whl size=188776 sha256=5c38f66f7c3c15acf066c94502e715268b78d8805799ebbc5cfaecfa0e059d6c\n  Stored in directory: /tmp/pip-ephem-wheel-cache-NK2hhK/wheels/89/08/e2/a52c8af5a93d5f1363833f61e3460cbe8abfe6ffc624cd7dac\nSuccessfully built zuul\nInstalling collected packages: zuul\nSuccessfully installed zuul-1.7.7.dev1\n'
+2023-01-13 15:42:25,096:INFO:b''
+2023-01-13 15:42:27,345:INFO:b"Cloning into 'zuul-dockers'...\n"
+2023-01-13 15:42:28,398:INFO:Successfully cloned zuul-dockers repository
+2023-01-13 15:42:29,204:INFO:b"'./zuul-dockers/rootfs/etc/zuul/gearman-logging.conf' -> '/etc/zuul/gearman-logging.conf'\n'./zuul-dockers/rootfs/etc/zuul/launcher-logging.conf' -> '/etc/zuul/launcher-logging.conf'\n'./zuul-dockers/rootfs/etc/zuul/layout.yaml' -> '/etc/zuul/layout.yaml'\n'./zuul-dockers/rootfs/etc/zuul/merger-logging.conf' -> '/etc/zuul/merger-logging.conf'\n'./zuul-dockers/rootfs/etc/zuul/server-logging.conf' -> '/etc/zuul/server-logging.conf'\n'./zuul-dockers/rootfs/etc/zuul/zuul.conf' -> '/etc/zuul/zuul.conf'\n'./zuul-dockers/rootfs/etc/zuul/zuul_layout_jenkins_paras.py' -> '/etc/zuul/zuul_layout_jenkins_paras.py'\n"
+2023-01-13 15:42:29,205:INFO:Working on Copying Zuul.conf and layout to zuul container.
+2023-01-13 15:42:30,376:INFO:Successfully copied zuul.conf and layout.yaml to zuul container.
+2023-01-13 15:42:31,658:INFO:Chekcing for Zuul upgrade..
+2023-01-13 15:42:32,877:INFO:Successfully configured zuul container.
+2023-01-13 15:42:32,878:INFO:Installing Merger container now.. 
+2023-01-13 15:43:10,019:INFO:Successfully installed merger.
+2023-01-13 15:43:10,021:INFO:Configuring merger container.
+2023-01-13 15:43:10,022:INFO:Removing existing ssh keys..
+2023-01-13 15:43:12,236:INFO:Working on copying zuul.conf and layout.yaml for merger container.
+2023-01-13 15:43:13,331:INFO:Successfully copied config and layout.yaml to merger container.
+2023-01-13 15:43:14,049:INFO:Successfully configured Merger container.
+2023-01-13 15:43:14,049:INFO:Installing gearman container now..
+2023-01-13 15:43:41,622:INFO:Successfully installed gearman.
+2023-01-13 15:43:41,624:INFO:Installing Jenkins container now..
+2023-01-13 15:43:59,712:INFO:Successfully installed jenkins.
+2023-01-13 15:43:59,714:INFO:Installing gerrit container now..
+2023-01-13 15:44:10,440:INFO:Successfully installed gerrit.
+2023-01-13 15:44:14,084:INFO:Displaying all container status above.. please check.
+b'gerrit  Up 3 seconds
+jenkins  Up 14 seconds
+gearman  Up 32 seconds
+merger  Up About a minute
+zuul-server  Up About a minute
+mysql  Up 5 minutes
+'
+2023-01-13 15:44:14,085:INFO:Configuring Jenkins now..
+2023-01-13 15:44:14,086:INFO:Copying plugins.txt from linux host to container.
+2023-01-13 15:44:15,075:INFO:Successfully copied plugins.txt to jenkins container.
+2023-01-13 15:44:15,076:INFO:Installing Plugin Gearman in jenkins..
+2023-01-13 15:44:25,006:INFO:Successfully installed plugin-gearman in jenkins.
+2023-01-13 15:44:32,925:INFO:Adding jenkins jobs..
+2023-01-13 15:44:36,415:INFO:Successfully added jobs in jenkins.
+2023-01-13 15:44:36,415:INFO:Getting jenkins initial admin password for reference..
+2023-01-13 15:44:38,429:INFO:Jenkins Admin Password is :b'7e1fbbfa01c842d890e7df83be8db022\n'
+2023-01-13 15:44:38,429:INFO:Validating copy of config.xml to jenkins..
+2023-01-13 15:44:39,544:ERROR:Error in jenkins configuration, config.xml is not updated in jenkins.
+2023-01-13 15:44:39,545:INFO:Now add following ssh keys to gerrit: 
+2023-01-13 15:44:39,545:INFO:host : ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5DMgCggzBwY83cbzgWzKC8oxao9r1jKNqtPWeleHYJ36910lWR0ycG2/jMsLAEZeVlspSoU/Sj3ZYNoYQf2vMFo74ShN57qGc2tiUUBEAKIcLHscLGZhPCY/JiMvJajH6y56W+VT+4nkmlbX9G0giV7APGsepRmz3dcMk7z+0+jya/A0fqszd4oSDrIhZgOnrW1/OHoutR/YqPCoEWTcN06ez9A9c5lBqgkV7rOFP8iZGbkEp5PBXI6kMkP1IAYher4Ab+qtBlGwYWJOyh/q2Lpn6xlJ0lxufQCh/FCdcJ1vzjW1hJMdgBGSsGHybNtnrdMjZkfgRuefxLLQJK8kB root@santosh-test
+2023-01-13 15:44:39,545:INFO:zuul : ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQyRD5l4Q7rXXqSwL/1V+XPM5GFC5NqO/UQovzRyXkD3ojLFl21eei9IFOmkoweCZH3TrhuWFDpj9JK52RMs2vuUYqvl/6Pe7nx9xOoQdl2UNvCugC9h3KFwZ/86BbTKqZ67UNsnUoJ8qtDmWeXM/lzXG4bXt7X37+zXuVvl6mM4UvQ9OVkX2yEUJ0xAt9tRDcuA3HkkxufkJztpixn3u6d2zvM5aItWPSBMkIvUyOINSTi1SbnIRjb5cIaQXTUCaBTLrzlElGGp7cJtjh6qy0AlZHolcnM2+3rG5v63S7ASdILbUkf2Xr0YNAFhoqWS981FY0m7ci7OQpjIjfApI7 root@santosh-test
+2023-01-13 15:44:39,546:INFO:merger : ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGRXpvLPFPXNvBrNdeMgWR5nSTBUh/GGXSoySlVFBeBqYckvGv6Ewyz3EjC0iQ6BIy+OC4+TDzOa5cC1vVqKItkQdVYhNziL/hF5pbV+pn0NT/BA2amlbMyt0ekT02/U3v0hxZNvXNIglQMFBJnfO6pBEmXWQVUHlQIQ1GIuUzveUW64OUyBWTklbDjBLrLJI6p81ux4ba8Mk+TFj5vPmakZ29LDwKT7CiXIFmoSbze1XLNcs605CF/IsVl0T0J7Kpub+ARS+2mGIsD06d8qJ65iMyNog/FqWZBsUu073Xfs5P7QQ5qtMg+1bjFBoQE3AWYWalskBtS4nlBe/mYRxn root@64fbd1b33b23
+2023-01-13 15:44:39,546:INFO:Refer Terminal.

@@ -4,6 +4,7 @@ import random
 import re
 import subprocess
 import time
+import jenkins
 
 import paramiko
 from scp import SCPClient
@@ -361,7 +362,7 @@ def configure_merger_conf_layout():
 
 def check_status():
     time.sleep(3)
-    command = "docker ps --format '{{ .Names }}\t{{ .Status }}'"
+    command = "docker ps --format '{{ .Names }}  {{ .Status }}'"
     (stdin, stdout, stderr) = ssh.exec_command(command)
     if not stdout.channel.recv_exit_status():
         logger.info(
@@ -385,13 +386,10 @@ def timer(s):
 
 def configure_jenkins():
     logger.info("Configuring Jenkins now..")
-    logger.info("Copying plugins.txt from linux host to container.")
-    command = "docker cp /root/folder/plugins.txt jenkins:/var/jenkins_home/plugins.txt"
-    (stdin, stdout, stderr) = ssh.exec_command(command)
-    if not stdout.channel.recv_exit_status():
-        logger.info("Successfully copied plugins.txt to jenkins container.")
-    else:
-        logger.error(stderr.read())
+    logger.info("Getting jenkins initial admin password for reference..")
+    (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
+    jenkins_admin_password = str(stdout.read()).split('\\n')[0]
+    logger.info(f"Jenkins Admin Password is :{jenkins_admin_password}")
     logger.info("Installing Plugin Gearman in jenkins..")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec -w /var/jenkins_home/ jenkins jenkins-plugin-cli --plugins gearman-plugin:0.6.0")
@@ -399,42 +397,19 @@ def configure_jenkins():
         logger.info("Successfully installed plugin-gearman in jenkins.")
     else:
         logger.error(stderr.read())
-    command = "docker cp /root/folder/'hudson.plugins.gearman.GearmanPluginConfig.xml' jenkins:/var/jenkins_home/'hudson.plugins.gearman.GearmanPluginConfig.xml'"
-    (stdin, stdout, stderr) = ssh.exec_command(command)
-    command_config = "docker cp /root/folder/config.xml jenkins:/var/jenkins_home/config.xml"
-    (stdin, stdout, stderr) = ssh.exec_command(command_config)
-    (stdin, stdout, stderr) = ssh.exec_command("docker restart jenkins")
-    logger.info("Restarting jenkins..")
     time.sleep(5)
     # Adding jobs
     logger.info("Adding jenkins jobs..")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket reload-configuration")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job1 < /root/folder/job.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job2 < /root/folder/job.xml")
-    (stdin, stdout, stderr) = ssh.exec_command("java -jar jenkins-cli.jar -s http://localhost:8080 -webSocket create-job job3 < /root/folder/job.xml")
-    if not stdout.channel.recv_exit_status():
-        logger.error("TODO: Error in config.xml in jenkins")
-    logger.info("Getting jenkins initial admin password for reference..")
-    (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
-    admin_password_1 = stdout.read()
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home/secrets/ jenkins cat initialAdminPassword")
-    admin_password_2 = stdout.read()
-    if admin_password_1 == admin_password_2:
-        logger.info(f"Jenkins Admin Password is :{admin_password_1}")
-    else:
-        logger.info(f"Jenkins Admin Password is :{admin_password_1} or {admin_password_2}")
-    logger.info("Validating copy of config.xml to jenkins..")
-    (stdin, stdout, stderr) = ssh.exec_command("docker exec -w /var/jenkins_home jenkins cat config.xml")
-    if validate_copy(stdout.read()) == -1:
-        logger.error("Error in jenkins configuration, config.xml is not updated in jenkins.")
-    else:
-        logger.info("Jenkins configuration done.")
+    server = jenkins.Jenkins('http://localhost:8080', username='admin', password='e90f9f392aad4b4fa1f75bb62c90768c', timeout=5)
+    logger.info("Jenkins configuration done.")
 
 
 def validate_copy(output):
     output = str(output)
-    mat = re.search(r'<useSecurity>false</useSecurity>', output)
+    mat = re.search(r'(<useSecurity>false</useSecurity>)', output)
     if mat:
+        logger.info(f"config.xml security status: {mat.group(1)}")
+        logger.info("Successfully copied config.xml to jenkins contianer.")
         return 0
     else:
         return -1
@@ -483,6 +458,7 @@ def zuul_upgrade():
             (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git pull --rebase")
             (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git checkout tags/2.0.1")
             (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/ zuul-server pip install .")
+    else:
 
 
 # Entry point of Script
