@@ -463,6 +463,7 @@ def zuul_upgrade():
 
 
 # Entry point of Script
+logger.info("Peforming fresh installation of all containers from scratch..")
 clean_all()
 check_docker()
 docker_registry_login()
