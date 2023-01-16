@@ -5,6 +5,7 @@ import re
 import subprocess
 import time
 import jenkins
+from gerrit import GerritClient
 
 import paramiko
 from scp import SCPClient
@@ -422,6 +423,20 @@ def add_gerrit_ssh():
     [logger.info(key + ' : ' + value) for key, value in SSH_KEYS.items()]
     timer("""Create your gerrit account at \
     http://gerrit-code.zuulqa.dynamic.nsn-net.net/ add ssh keys of host, merger and zuul""")
+    gerrit_username = 'user1'
+    gerrit_passwd = 'password1'
+    command = f"cat ~/.ssh/gerrit_rsa.pub | ssh -p 29418 {args.ip} gerrit create-account --ssh-key KEY --https-password {gerrit_passwd} {gerrit_username}"
+    (stdin, stdout, stderr) = ssh.exec_command(command)
+    client = GerritClient(base_url="http://gerrit-code.zuulqa.dynamic.nsn-net.net", username=gerrit_username, password=gerrit_password1)
+    input_ = {
+    "description": "This is a demo project.",
+    "submit_type": "INHERIT",
+    "owners": [
+      "MyProject-Owners"
+    ]
+    }
+    project = client.projects.create('Project1', input_)
+
 
 
 def restart_services_zuul_and_merger():
@@ -440,6 +455,7 @@ def restart_services_zuul_and_merger():
 
 def show_zuul_demo():
     num = random.randint(1, 1000000)
+    # add git clone
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add new_file{num};git commit -m \"added file{num}\";git push origin HEAD:refs/for/master")
     if stdout: logger.info(stdout.read())
