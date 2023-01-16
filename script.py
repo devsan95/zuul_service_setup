@@ -144,6 +144,12 @@ def make_workspace():
     if not stdout.channel.recv_exit_status():
         filter_ssh_key("host", add_ssh_keys_host_machine())
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
+        scp.put('folder', '/root/folder')
+        (stdin, stdout, stderr) = ssh.exec_command('ls /root/folder')
+        if not stdout.channel.recv_exit_status():
+            logger.info(f"Successfully copied config files to host machine.")
+        else:
+            logger.error(f"Error in copying config files to host machine.")
     else:
         logger.error(f"Error in creating workspace in linux host machine, {stderr.read()}")
 
@@ -239,11 +245,13 @@ def zuul_upgrade():
 
 
 def add_ssh_keys_host_machine(container=None):
+    logger.info("Generatng SSH keys for gerrit..")
     if container:
         remove_keys = f"docker exec -w ~/.ssh {container} "
         generate_keys = f"docker exec -w ~/.ssh {container} "
         show_keys = f"docker exec -w ~/.ssh {container} "
     else:
+        container = 'host'
         remove_keys = ''
         generate_keys = ''
         show_keys = ''
@@ -253,9 +261,10 @@ def add_ssh_keys_host_machine(container=None):
     (stdin, stdout, stderr) = ssh.exec_command(f"{show_keys}cat ~/.ssh/gerrit_rsa.pub")
     if not stdout.channel.recv_exit_status():
         ssh_key = stdout.read()
+        logger.info(f"Successfully generated gerrit SSH keys for {container}.")
         return ssh_key
     else:
-        logger.error(f"Error in creating ssh keys for {container}, {stderr.read()}")
+        logger.error(f"Error in creating gerrit ssh keys for {container}, {stderr.read()}")
 
 
 def install_gearman():
@@ -382,12 +391,29 @@ def configure_jenkins():
         "docker exec -w /var/jenkins_home/ jenkins jenkins-plugin-cli --plugins gearman-plugin:0.6.0")
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed plugin-gearman in jenkins.")
+        command = "docker cp /root/folder/'hudson.plugins.gearman.GearmanPluginConfig.xml' jenkins:/var/jenkins_home/'hudson.plugins.gearman.GearmanPluginConfig.xml'"
+        (stdin, stdout, stderr) = ssh.exec_command(command)
+        if not stdout.channel.recv_exit_status():
+            logger.info(
+                "Successfully copied GearmanPluginConfig to jenkins container.")
+        else:
+            logger.error(f"Error in copying GearmanPluginConfig file to jenkins container.")
     else:
         logger.error(stderr.read())
     time.sleep(5)
     logger.info("Adding 3 empty Jenkins Jobs..")
-    # TODO: Add jenkins jobs
-    
+    # Add jenkins jobs
+    server = jenkins.Jenkins(f'http://{args.ip}:8080', username='admin', password=args.jenkins_admin_password)
+    user = server.get_whoami()
+    if user != 'admin':
+        logger.error(f"Error connecting Jenkins.")
+    else:
+        version = server.get_version()
+        logger.info(f"Jenkins user and version is: {user} and {version}")
+        server.create_job('job1', jenkins.EMPTY_CONFIG_XML)
+        server.create_job('job2', jenkins.EMPTY_CONFIG_XML)
+        server.create_job('job3', jenkins.EMPTY_CONFIG_XML)
+        logger.info(f"Jobs created in jenkns are: {server.get_all_jobs()}")
     logger.info("Jenkins configuration done.")
 
 
