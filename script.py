@@ -455,7 +455,7 @@ def restart_services_zuul_and_merger():
 
 def show_zuul_demo():
     num = random.randint(1, 1000000)
-    # add git clone
+    # TODO: add git clone
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add new_file{num};git commit -m \"added file{num}\";git push origin HEAD:refs/for/master")
     if stdout: logger.info(stdout.read())
