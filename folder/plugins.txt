@@ -1,0 +1,9 @@
+ gearman-plugin:0.6.0
+ build-timeout:1.28
+ email-ext:2.93
+ javax-mail-api:1.6.2-8
+ ldap:659.v8ca_b_a_fe79fa_d
+ workflow-aggregator:590.v6a_d052e5a_a_b_5
+ pipeline-stage-view:2.28
+ timestamper:1.21
+ ws-cleanup:0.44
