@@ -5,6 +5,7 @@ import re
 import subprocess
 import time
 import jenkins
+from gerrit import GerritClient
 
 import paramiko
 from scp import SCPClient
@@ -44,6 +45,19 @@ scp = SCPClient(ssh.get_transport())
 SSH_KEYS = dict()
 
 
+def clean_all():
+    logger.info("Cleaning existing contianers and images..")
+    command = "docker stop $(docker ps -aq);docker rm $(docker ps -aq);docker rmi $(docker image ls -aq)"
+
+    (stdin, stdout, stderr) = ssh.exec_command(command)
+    if not stdout.channel.recv_exit_status():
+        logger.info("Successfully cleaned all images & containers.")
+    elif stdout.channel.recv_exit_status() == 1:
+        logger.info("No containers and images found to clean.\n")
+    else:
+        logger.error("Issue in cleaning containers or images.")
+
+
 def check_docker():
     # check existing docker
     logger.info("Checking docker setup now..")
@@ -76,9 +90,11 @@ def check_docker():
         total_command = f"""{command}&&{repository_setup_command}&&{docker_engine_command}&&{start_docker_command}&&{hello_world_container_command}"""
 
         (stdin, stdout, stderr) = ssh.exec_command(total_command)
-        logger.info(f"stdout is {stdout.read()}")
-        logger.info(
-            f"Docker check exited with exit code {stdout.channel.recv_exit_status()}")
+        if 'Hello' in str(stdout.read()):
+            logger.info(f"Successfully installed docker on linux host.")
+        else:
+            logger.error(
+                f"Docker installation error: {stderr.read()}")
     else:
         logger.info("Found existing docker. Skipping docker installation.")
         (stdin, stdout, stderr) = ssh.exec_command(
@@ -127,49 +143,43 @@ def make_workspace():
 
     (stdin, stdout, stderr) = ssh.exec_command('ls /ephemeral/zuul_mergers')
     if not stdout.channel.recv_exit_status():
-        add_ssh_keys_host_machine()
+        filter_ssh_key("host", add_ssh_keys_host_machine())
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
-        (stdin, stdout, stderr) = ssh.exec_command('rm -rf ~/folder ~/.bashrc; mkdir ~/folder;chmod 777 ~/folder')
-        logger.info("Copying config files from local machine to linux host..")
-        scp.put('folder', '/root', recursive=True, preserve_times=True)
-        (stdin, stdout, stderr) = ssh.exec_command('\\cp /root/folder/.bashrc /root')
-        time.sleep(3)
-        logger.info("Checking Java in linux host..")
-        (stdin, stdout, stderr) = ssh.exec_command('java --version')
-        if stdout.channel.recv_exit_status():
-            logger.info("Java 17 not found, installing on host machine..")
-            # https://techviewleo.com/install-java-openjdk-on-rocky-linux-centos/
-            install_java()
+        (stdin, stdout, stderr) = ssh.exec_command('rm -rf folder')
+        (stdin, stdout, stderr) = ssh.exec_command('mkdir folder')
+        (stdin, stdout, stderr) = ssh.exec_command('chmod 777 folder')
+        scp.put('zuul.conf', '/root/folder/zuul.conf')
+        scp.put('zuul_conf_merger.conf', '/root/folder/zuul_conf_merger.conf')
+        scp.put('layout.yaml', '/root/folder/layout.yaml')
+        scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/folder/hudson.plugins.gearman.GearmanPluginConfig.xml')
+        (stdin, stdout, stderr) = ssh.exec_command('chmod -r /root/folder')
+        (stdin, stdout, stderr) = ssh.exec_command("cat /root/folder/hudson.plugins.gearman.GearmanPluginConfig.xml")
+        if not stdout.channel.recv_exit_status():
+            logger.info(f"Successfully uploaded config files to host.")
         else:
-            if 'openjdk 17.' in str(stdout.read()):
-                logger.info("Java 17 found, sipping java installation on host machine..")
-            else:
-                install_java()
-        logger.info("Successfully created new workspace.")
-
-
-def install_java():
-    (stdin, stdout, stderr) = ssh.exec_command('sudo yum -y install wget curl; wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz;tar xvf openjdk-17.0.2_linux-x64_bin.tar.gz;sudo mv jdk-17.0.2/ /opt/jdk-17/')
-    (stdin, stdout, stderr) = ssh.exec_command('java --version')
-    if 'openjdk 17.' in str(stdout.read()):
-        logger.info("Java 17 Installed successully.")
-        (stdin, stdout, stderr) = ssh.exec_command("rm -rf openjdk* jenkins-cli*")
-        logger.info("Installaing jenkins-cli.jar file to linux host")
-        # install jenkins-cli.jar
-        command_cli = "wget http://localhost:8080/jnlpJars/jenkins-cli.jar"
-        logger.info("Installing jenkin-cli.jar in linux host.")
-        (stdin, stdout, stderr) = ssh.exec_command(command_cli)
-        logger.info("Successfully installed jenkins-cli.jar to linux host")
+            logger.info(f"Error in copying config file to host")
     else:
-        logger.error(f"Error in Java 17 Installation.{stderr.read()}")
+        logger.error(f"Error in creating workspace in linux host machine, {stderr.read()}")
 
 
-def add_ssh_keys_host_machine():
-    (stdin, stdout, stderr) = ssh.exec_command("rm -rf  ~/.ssh/new_id_rsa*")
-    (stdin, stdout, stderr) = ssh.exec_command(
-        "ssh-keygen -t rsa -f ~/.ssh/new_id_rsa -N ''")
-    (stdin, stdout, stderr) = ssh.exec_command("cat ~/.ssh/new_id_rsa.pub")
-    filter_ssh_key("host", stdout.read())
+def install_mysql():
+    logger.info("Installing Mysql container..")
+    command = """docker run --restart always --name mysql -v /ephemeral/mysql:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=5gzuul_pwd -d zuul-local.artifactory-espoo1.int.net.nokia.com/zuul-images/mysql:v1.0 --character-set-server=utf8 --collation-server=utf8_general_ci"""
+    (stdin, stdout, stderr) = ssh.exec_command(command)
+    if not stdout.channel.recv_exit_status():
+        logger.info("Successfully installed Mysql.")
+        time.sleep(10)
+        try:
+            result = subprocess.run(["powershell", "-Command", "taskkill /im heidisql* /t /f"])
+            if result.stderr:
+                raise subprocess.CalledProcessError(cmd='', returncode=0)
+        except subprocess.CalledProcessError:
+            logger.info('No running instance of heidisql.')
+        time.sleep(5)
+        subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt}"])
+        timer("Create database test_zuul")
+    else:
+        logger.error(stderr.read())
 
 
 def install_zuul():
@@ -177,21 +187,13 @@ def install_zuul():
     zuul_install_command = """docker run -itd --restart always --log-opt max-size=2g --log-opt max-file=1 --privileged --name zuul-server -v /ephemeral/etc/:/etc/zuul/ -v /ephemeral/git/:/ephemeral/zuul/git/ -v /ephemeral/log/:/ephemeral/log/zuul/ -v /ephemeral/tmp/:/tmp/ --net host zuul-local.artifactory-espoo1.int.net.nokia.com/zuul-images/zuul-server:v2.7.7.1"""
     (stdin, stdout, stderr) = ssh.exec_command(zuul_install_command)
     if stdout.channel.recv_exit_status():
-        logger.info(
+        logger.error(
             "Issue in installing zuul, check command again.")
     else:
         logger.info(
             f"Installed zuul container, Container id : {stdout.read()}")
         logger.info("Configuring zuul container..")
-        # generate ssh key using RSA
-        logger.info("Removing existing ssh keys in zuul..")
-        (stdin, stdout, stderr) = ssh.exec_command(
-            "docker exec -w  ~/.ssh/ zuul-server rm -rf  ~/.ssh/id_rsa*")
-        (stdin, stdout, stderr) = ssh.exec_command(
-            "docker exec -w  ~/.ssh/ zuul-server ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''")
-        (stdin, stdout, stderr) = ssh.exec_command(
-            "docker exec -w  ~/.ssh/ zuul-server cat id_rsa.pub")
-        filter_ssh_key("zuul", stdout.read())
+        filter_ssh_key("zuul", add_ssh_keys_host_machine('zuul-server'))
 
         (stdin, stdout, stderr) = ssh.exec_command(
             "docker exec -w /root/zuul zuul-server git pull")
@@ -229,37 +231,48 @@ def install_zuul():
                 f"Issue in configuring zuul container: \n {stderr.read()}")
 
 
-def clean_all():
-    logger.info("Cleaning existing contianers and images..")
-    command = "docker stop $(docker ps -aq);docker rm $(docker ps -aq);docker rmi $(docker image ls -aq)"
-
-    (stdin, stdout, stderr) = ssh.exec_command(command)
+def zuul_upgrade():
+    logger.info("Chekcing for Zuul upgrade..")
+    (stdin, stdout, stderr) = ssh.exec_command(
+        f"pip list | grep zuul")
     if not stdout.channel.recv_exit_status():
-        logger.info("Successfully cleaned all images & containers.")
-    elif stdout.channel.recv_exit_status() == 1:
-        logger.info("No containers and images found to clean.\n")
+        logger.info(f"Zuul Version is {str(stdout.read())}")
+        if '2.' in str(stdout.read()):
+            logger.info("Zuul is up to date.")
+            return
+        else:
+            logger.info("Upgrading Zuul to latest verison..")
+            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git pull --rebase")
+            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git checkout tags/2.0.1")
+            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/ zuul-server pip install .")
+            logger.info(f"Validating Zuul upgrade..")
+            zuul_upgrade()
     else:
-        logger.error("Issue in cleaning containers or images.")
+        logger.info("Zuul not found, Installing now..")
+        zuul_upgrade()
 
 
-def install_mysql():
-    logger.info("Installing Mysql container..")
-    command = """docker run --restart always --name mysql -v /ephemeral/mysql:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=5gzuul_pwd -d zuul-local.artifactory-espoo1.int.net.nokia.com/zuul-images/mysql:v1.0 --character-set-server=utf8 --collation-server=utf8_general_ci"""
-    (stdin, stdout, stderr) = ssh.exec_command(command)
+def add_ssh_keys_host_machine(container=None):
+    logger.info("Generatng SSH keys for gerrit..")
+    if container:
+        remove_keys = f"docker exec -w ~/.ssh {container} "
+        generate_keys = f"docker exec -w ~/.ssh {container} "
+        show_keys = f"docker exec -w ~/.ssh {container} "
+    else:
+        container = 'host'
+        remove_keys = ''
+        generate_keys = ''
+        show_keys = ''
+
+    (stdin, stdout, stderr) = ssh.exec_command(f"{remove_keys}rm -rf  ~/.ssh/gerrit_rsa*")
+    (stdin, stdout, stderr) = ssh.exec_command(f"{generate_keys}ssh-keygen -t rsa -f ~/.ssh/gerrit_rsa -N ''")
+    (stdin, stdout, stderr) = ssh.exec_command(f"{show_keys}cat ~/.ssh/gerrit_rsa.pub")
     if not stdout.channel.recv_exit_status():
-        logger.info("Successfully installed Mysql.")
-        time.sleep(10)
-        try:
-            result = subprocess.run(["powershell", "-Command", "taskkill /im heidisql* /t /f"])
-            if result.stderr:
-                raise subprocess.CalledProcessError(cmd='', returncode=0)
-        except subprocess.CalledProcessError:
-            logger.info('No running instance of heidisql.')
-        time.sleep(5)
-        subprocess.run(["powershell", "-Command", f"C:\\'Program Files'\\HeidiSQL\\heidisql.exe --nettype=0 --host={args.ip} --library=libmariadb.dll -u={args.du} -p={args.dp} --port={args.dt}"])
-        timer("Create database test_zuul")
+        ssh_key = stdout.read()
+        logger.info(f"Successfully generated gerrit SSH keys for {container}.")
+        return ssh_key
     else:
-        logger.error(stderr.read())
+        logger.error(f"Error in creating gerrit ssh keys for {container}, {stderr.read()}")
 
 
 def install_gearman():
@@ -279,7 +292,7 @@ def filter_ssh_key(machine, output):
         key = str(result.group()).split('\\n')[0]
         SSH_KEYS[machine] = key
     else:
-        logger.info(f"error in filtering ssh key for {machine}")
+        logger.error(f"error in filtering ssh key for {machine}")
 
 
 def format_result(output):
@@ -298,22 +311,13 @@ def install_merger():
         logger.info("Successfully installed merger.")
     else:
         logger.error(stderr.read())
-    # generate ssh key using RSA
-    logger.info("Configuring merger container.")
-    logger.info("Removing existing ssh keys..")
-    (stdin, stdout, stderr) = ssh.exec_command(
-        "docker exec -w  ~/.ssh/ merger rm -rf  ~/.ssh/id_rsa*")
-    (stdin, stdout, stderr) = ssh.exec_command(
-        "docker exec -w  ~/.ssh/ merger ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ''")
-    (stdin, stdout, stderr) = ssh.exec_command(
-        "docker exec -w  ~/.ssh/ merger cat id_rsa.pub")
-    filter_ssh_key("merger", stdout.read())
+    filter_ssh_key("merger", add_ssh_keys_host_machine('merger'))
     if configure_merger_conf_layout() == -1:
         (stdin, stdout, stderr) = ssh.exec_command(
             "docker exec -w  /root merger zuul-merger -c /etc/zuul/zuul.conf")
         logger.info("Successfully configured Merger container.")
     else:
-        logger.info("Issue in configuring Merger container.")
+        logger.error("Issue in configuring Merger container.")
 
 
 def install_jenkins():
@@ -390,30 +394,35 @@ def configure_jenkins():
     (stdin, stdout, stderr) = ssh.exec_command("cat /ephemeral/jenkins/secrets/initialAdminPassword")
     jenkins_admin_password = str(stdout.read()).split('\\n')[0]
     logger.info(f"Jenkins Admin Password is :{jenkins_admin_password}")
-    logger.info("Installing Plugin Gearman in jenkins..")
+    logger.info("Installing Gearman Plugin in jenkins..")
     (stdin, stdout, stderr) = ssh.exec_command(
         "docker exec -w /var/jenkins_home/ jenkins jenkins-plugin-cli --plugins gearman-plugin:0.6.0")
     if not stdout.channel.recv_exit_status():
         logger.info("Successfully installed plugin-gearman in jenkins.")
+        command = "docker cp /root/folder/'hudson.plugins.gearman.GearmanPluginConfig.xml' jenkins:/var/jenkins_home/'hudson.plugins.gearman.GearmanPluginConfig.xml'"
+        (stdin, stdout, stderr) = ssh.exec_command(command)
+        if not stdout.channel.recv_exit_status():
+            logger.info(
+                "Successfully copied GearmanPluginConfig to jenkins container.")
+        else:
+            logger.error(f"Error in copying GearmanPluginConfig file to jenkins container.")
     else:
         logger.error(stderr.read())
     time.sleep(5)
-    # Adding jobs
-    logger.info("Adding jenkins jobs..")
-    server = jenkins.Jenkins('http://localhost:8080', username='admin', password=jenkins_admin_password, timeout=10)
-    # https://python-jenkins.readthedocs.io/en/latest/
-    logger.info("Jenkins configuration done.")
-
-
-def validate_copy(output):
-    output = str(output)
-    mat = re.search(r'(<useSecurity>false</useSecurity>)', output)
-    if mat:
-        logger.info(f"config.xml security status: {mat.group(1)}")
-        logger.info("Successfully copied config.xml to jenkins contianer.")
-        return 0
+    logger.info("Adding 3 empty Jenkins Jobs..")
+    # Add jenkins jobs
+    server = jenkins.Jenkins(f'http://{args.ip}:8080', username='admin', password=jenkins_admin_password)
+    user = server.get_whoami()
+    if user != 'admin':
+        logger.error(f"Error connecting Jenkins.")
     else:
-        return -1
+        version = server.get_version()
+        logger.info(f"Jenkins user and version is: {user} and {version}")
+        server.create_job('job1', jenkins.EMPTY_CONFIG_XML)
+        server.create_job('job2', jenkins.EMPTY_CONFIG_XML)
+        server.create_job('job3', jenkins.EMPTY_CONFIG_XML)
+        logger.info(f"Jobs created in jenkns are: {server.get_all_jobs()}")
+    logger.info("Jenkins configuration done.")
 
 
 def add_gerrit_ssh():
@@ -421,6 +430,19 @@ def add_gerrit_ssh():
     [logger.info(key + ' : ' + value) for key, value in SSH_KEYS.items()]
     timer("""Create your gerrit account at \
     http://gerrit-code.zuulqa.dynamic.nsn-net.net/ add ssh keys of host, merger and zuul""")
+    gerrit_username = 'user1'
+    gerrit_passwd = 'password1'
+    command = f"cat ~/.ssh/gerrit_rsa.pub | ssh -p 29418 {args.ip} gerrit create-account --ssh-key KEY --https-password {gerrit_passwd} {gerrit_username}"
+    (stdin, stdout, stderr) = ssh.exec_command(command)
+    client = GerritClient(base_url="http://gerrit-code.zuulqa.dynamic.nsn-net.net", username=gerrit_username, password=gerrit_password1)
+    input_ = {
+    "description": "This is a demo project.",
+    "submit_type": "INHERIT",
+    "owners": [
+      "MyProject-Owners"
+    ]
+    }
+    project = client.projects.create('Project1', input_)
 
 
 def restart_services_zuul_and_merger():
@@ -439,27 +461,12 @@ def restart_services_zuul_and_merger():
 
 def show_zuul_demo():
     num = random.randint(1, 1000000)
+    # TODO: add git clone
     (stdin, stdout, stderr) = ssh.exec_command(
         f"cd pipeline_demo; touch new_file{num}; echo 'hello' > new_file{num}; git add new_file{num};git commit -m \"added file{num}\";git push origin HEAD:refs/for/master")
     if stdout: logger.info(stdout.read())
     if stderr: logger.error(str(stderr.read())+'\n' + "POSSIBLE GERRIT ISSUE, PLEASE CHECK.")
     logger.info("Visit Gerrit commits -> http://gerrit-code.zuulqa.dynamic.nsn-net.net/dashboard/self")
-
-
-def zuul_upgrade():
-    logger.info("Chekcing for Zuul upgrade..")
-    (stdin, stdout, stderr) = ssh.exec_command(
-        f"pip list | grep zuul")
-    if not stdout.channel.recv_exit_status():
-        logger.info(f"Zuul Version is {str(stdout.read())}")
-        if '2.' in str(stdout.read()):
-            logger.info("Zuul is up to date.")
-        else:
-            logger.info("Upgrading Zuul to latest verison..")
-            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git pull --rebase")
-            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/zuul zuul-server git checkout tags/2.0.1")
-            (stdin, stdout, stderr) = ssh.exec_command(f"docker exec -w /root/zuul/ zuul-server pip install .")
-    else:
 
 
 # Entry point of Script
