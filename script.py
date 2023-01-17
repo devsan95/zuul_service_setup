@@ -145,12 +145,19 @@ def make_workspace():
     if not stdout.channel.recv_exit_status():
         filter_ssh_key("host", add_ssh_keys_host_machine())
         (stdin, stdout, stderr) = ssh.exec_command('git config --global credential.helper store')
-        scp.put('folder', '/root/folder')
-        (stdin, stdout, stderr) = ssh.exec_command('ls /root/folder')
+        (stdin, stdout, stderr) = ssh.exec_command('rm -rf folder')
+        (stdin, stdout, stderr) = ssh.exec_command('mkdir folder')
+        (stdin, stdout, stderr) = ssh.exec_command('chmod 777 folder')
+        scp.put('zuul.conf', '/root/folder/zuul.conf')
+        scp.put('zuul_conf_merger.conf', '/root/folder/zuul_conf_merger.conf')
+        scp.put('layout.yaml', '/root/folder/layout.yaml')
+        scp.put('hudson.plugins.gearman.GearmanPluginConfig.xml', '/root/folder/hudson.plugins.gearman.GearmanPluginConfig.xml')
+        (stdin, stdout, stderr) = ssh.exec_command('chmod -r /root/folder')
+        (stdin, stdout, stderr) = ssh.exec_command("cat /root/folder/hudson.plugins.gearman.GearmanPluginConfig.xml")
         if not stdout.channel.recv_exit_status():
-            logger.info(f"Successfully copied config files to host machine.")
+            logger.info(f"Successfully uploaded config files to host.")
         else:
-            logger.error(f"Error in copying config files to host machine.")
+            logger.info(f"Error in copying config file to host")
     else:
         logger.error(f"Error in creating workspace in linux host machine, {stderr.read()}")
 
@@ -404,7 +411,7 @@ def configure_jenkins():
     time.sleep(5)
     logger.info("Adding 3 empty Jenkins Jobs..")
     # Add jenkins jobs
-    server = jenkins.Jenkins(f'http://{args.ip}:8080', username='admin', password=args.jenkins_admin_password)
+    server = jenkins.Jenkins(f'http://{args.ip}:8080', username='admin', password=jenkins_admin_password)
     user = server.get_whoami()
     if user != 'admin':
         logger.error(f"Error connecting Jenkins.")
@@ -436,7 +443,6 @@ def add_gerrit_ssh():
     ]
     }
     project = client.projects.create('Project1', input_)
-
 
 
 def restart_services_zuul_and_merger():
