@@ -208,17 +208,11 @@ def install_zuul():
             "docker exec -w /root/zuul zuul-server  \\cp -uv /root/zuul/etc/status/public_html/* /ephemeral/zuul/www/")
         logger.info(stdout.read())
         (stdin, stdout, stderr) = ssh.exec_command(
-            "docker exec -w ~ zuul-server  git clone 'https://gerrit.ext.net.nokia.com/gerrit/MN/SCMTA/zuul/zuul-dockers'")
-        logger.info(stdout.read())
-        (stdin, stdout, stderr) = ssh.exec_command("cd zuul-dockers")
-        if not stdout.channel.recv_exit_status():
-            logger.info("Successfully cloned zuul-dockers repository")
-        else:
-            logger.error(
-                "zuul-dockers repository not cloned successfully to host machine")
+            "docker exec -w /root zuul-server git clone https://gerrit.ext.net.nokia.com/gerrit/MN/SCMTA/zuul/zuul-dockers")
         (stdin, stdout, stderr) = ssh.exec_command(
-            "docker exec -w ~ zuul-server  \\cp -uv ./zuul-dockers/rootfs/etc/zuul/* /etc/zuul/")
+            "docker exec -w /root/zuul-dockers/rootfs/etc/zuul/ zuul-server  \\cp -uv .* /etc/zuul/")
         logger.info(stdout.read())
+        logger.info(stderr.read())
         if not stdout.channel.recv_exit_status() and configure_zuul_conf_layout() == -1:
             (stdin, stdout, stderr) = ssh.exec_command(
                                                     "docker exec -w /root zuul-server zuul-server -c /etc/zuul/zuul.conf -l /etc/zuul/layout.yaml")
