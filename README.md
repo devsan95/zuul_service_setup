@@ -12,7 +12,8 @@
 5. Run command for script: Python script.py
 
 ## Need:
-- Its Very difficult for a new joiner for setting up zuul service in one or two attempts, since there are lot of checkpoints in between apart from sequential installation of containers. 
+- Its Very difficult for a new joiner for setting up zuul service in one or two attempts, since there are lot of checkpoints in between apart from sequential installation of containers as per confluence page - https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
+
 - Also, This script handles re-run environment very effectively by cleaning old images/containers, files created, etc.
 - Approximately, It takes around 3-4 days to set this service for a first time user and around 30 min for a practioner. This script does this in 5 minutes for both kind of users.
 
