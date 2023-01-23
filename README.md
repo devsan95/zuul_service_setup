@@ -1,4 +1,4 @@
-# Automation Script for Zuul service setup on Linsee servers.
+# Automatic deployment of Zuul service on Linsee servers.
 
 ## Prerequisties:
 1. Install following packages before execting this script(by disconnecting VPN)
