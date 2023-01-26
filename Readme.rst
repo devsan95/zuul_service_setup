@@ -3,7 +3,8 @@ Automatic deployment of Zuul service on Linsee servers.
 
 Prerequisties:
 --------------
-1. Install following packages before execting this scriptby disconnecting VPN
+
+1. Install following packages before execting this script (by disconnecting VPN)
     - paramiko : pip install paramiko
     - scp : pip install scp
     - api4jenkins: pip install api4jenkins
