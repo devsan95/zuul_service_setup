@@ -3,13 +3,6 @@ Automatic deployment of Zuul service on Linsee servers.
 
 Prerequisties:
 --------------
-
-1. Install following packages before execting this script (by disconnecting VPN)
-    - paramiko : pip install paramiko
-    - scp : pip install scp
-    - api4jenkins: pip install api4jenkins
-    - PyYAML: pip install PyYAML
-
 2. Must be Connected to NOKIA VPN from start of script run to end of execution
 3. Provide your Linsee machine, gerrit, database details in config.yaml file
 4. Run Script after "cd mn_scripts/tools/zuul_service_setup"
