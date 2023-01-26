@@ -5,8 +5,7 @@ Prerequisties:
 --------------
 2. Must be Connected to NOKIA VPN from start of script run to end of execution
 3. Provide your Linsee machine, gerrit, database details in config.yaml file
-4. Run Script after "cd mn_scripts/tools/zuul_service_setup"
-5. Run command for script: Python script.py
+4. Install projetc
 
 Need:
 -----
