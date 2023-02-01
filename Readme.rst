@@ -24,10 +24,10 @@ Need:
 
 Approach:
 ---------
-- Automates Steps described for zuul service setup in https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
+1. Automates Steps described for zuul service setup in https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
 
-- Installs 6 containers sequentially.
-- Apart from just installing containers, this script takes off the burden of manual activities like:
+2. Installs 6 containers sequentially.
+3. Apart from just installing containers, this script takes off the burden of manual activities like:
   - creation of database on mysql server container
   - adding jenkins jobs
   - uploading gerrit public keys of 3 peers
@@ -38,7 +38,7 @@ Approach:
   - cleans all images/container before running script
   - creates new log directory ephermal everytime for smooth installation
   - configures linSEE machine git to cache gerrit credentials to avoid repetetive prompts of login credentials
-- Detailed Execution log at Log_file.log can be used for debugging.
+4. Detailed Execution log at Log_file.log can be used for debugging.
 
 Benefits:
 ---------
