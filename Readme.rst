@@ -30,7 +30,7 @@ Approach:
 3. Apart from just installing containers, this script takes off the burden of manual activities like:
   - creation of database on mysql server container
   - adding jenkins jobs
-  - uploading gerrit public keys of 3 peers
+  - uploading gerrit public keys of 3 peers(for LinSEE host, zuul and merger container)
   - installing gearman plugin in jenkins and configuring its port.
   - checking health of services inside container
   - upgrading zuul version to latest mentioned
