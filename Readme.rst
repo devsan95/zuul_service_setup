@@ -37,7 +37,7 @@ Approach:
   - displaying all containers status
   - cleans all images/container before running script
   - creates new log directory ephermal everytime for smooth installation
-  - configures linSEE machine git to cache gerrit credentials to avoid repetetive prompts of login credentials
+  - configures LinSEE machine git to cache gerrit credentials to avoid repetetive prompts of login credentials
 4. Detailed Execution log at Log_file.log can be used for debugging.
 
 Benefits:
