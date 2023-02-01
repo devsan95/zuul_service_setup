@@ -3,7 +3,7 @@ Automatic deployment of Zuul service on Linsee servers.
 
 Prerequisties:
 --------------
-1. Install project by cloning the repo and navigate to setup.py path[cd "mn_scripts\tools\zuul_service_setup"] and do ``pip install zuul_setup`` (disconnect vpn to install packages)
+1. Install project by cloning the repo and navigate to setup.py path[``cd mn_scripts\tools\zuul_service_setup``] and do ``pip install zuul_setup`` (disconnect vpn to install packages)
 2. Must be Connected to NOKIA VPN from here on (after step 1 in Prerequisties) i,e. start of script run to end of its execution.
 3. Provide following details:
     - your Linsee machine, gerrit, database details in config.yaml file
