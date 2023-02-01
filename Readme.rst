@@ -10,8 +10,8 @@ Prerequisties:
     - host and port values in GearmanPluginConfig.xml file
     - details in zuul.conf and zuul_conf_merger.conf
     - details in layout.yaml
-4. Run Script after "cd mn_scripts/tools/zuul_service_setup/src/zuul_setup"
-5. Run command for script: Python script.py
+4. Run Script after ``cd mn_scripts/tools/zuul_service_setup/src/zuul_setup``
+5. Run command for script: ``python script.py``
 
 Need:
 -----
