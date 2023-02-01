@@ -26,9 +26,18 @@ Approach:
 ---------
 - Automates Steps described for zuul service setup in https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
 
-- Every time, It cleans all previous containers/images and starts from fresh.
 - Installs 6 containers sequentially.
-- Handles configuring containers .
+- Apart from just installing containers, this script takes off the burden of manual activities like:
+  - creation of database on mysql server container
+  - adding jenkins jobs
+  - uploading gerrit public keys of 3 peers
+  - installing gearman plugin in jenkins and configuring its port.
+  - checking health of services inside container
+  - upgrading zuul version to latest mentioned
+  - displaying all containers status
+  - cleans all images/container before running script
+  - creates new log directory ephermal everytime for smooth installation
+  - configures linSEE machine git to cache gerrit credentials to avoid repetetive prompts of login credentials
 - Detailed Execution log at Log_file.log can be used for debugging.
 
 Benefits:
