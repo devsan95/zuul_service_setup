@@ -3,8 +3,8 @@ Automatic deployment of Zuul service on Linsee servers.
 
 Prerequisties:
 --------------
-1. Install project by cloning the repo and navigate to setup.py path[cd "mn_scripts\tools\zuul_service_setup"] and do "pip install zuul_setup"
-2. Must be Connected to NOKIA VPN from start of script run to end of execution
+1. Install project by cloning the repo and navigate to setup.py path[cd "mn_scripts\tools\zuul_service_setup"] and do "pip install zuul_setup" (disconnect vpn to install packages)
+2. Must be Connected to NOKIA VPN from here on (after step 1 in Prerequisties) i,e. start of script run to end of its execution.
 3. Provide following details:
     - your Linsee machine, gerrit, database details in config.yaml file
     - host and port values in GearmanPluginConfig.xml file
@@ -28,7 +28,7 @@ Approach:
 
 - Every time, It cleans all previous containers/images and starts from fresh.
 - Installs 6 containers sequentially.
-- Handles configuring containers 
+- Handles configuring containers .
 - Detailed Execution log at Log_file.log can be used for debugging.
 
 Benefits:
@@ -42,4 +42,4 @@ Benefits:
 Limitations
 -----------
 - Currently, Script runs well only on Windows machines, Linux support will be added later.
-- Script is developed using python 3.9 and needs python versions >=3.7, hence lacks support for python 2.x versions.
+- Script is developed using python 3.9 and needs python versions >=3.7; hence lacks support for python 2.x versions, which are officially deprecated by today.
