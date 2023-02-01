@@ -15,11 +15,11 @@ Prerequisties:
 
 Need:
 -----
-- Its Very difficult for a new joiner for setting up zuul service in one or two attempts, since there are lot of checkpoints in between apart 
+1. Its Very difficult for a new joiner for setting up zuul service in one or two attempts, since there are lot of checkpoints in between apart 
   from sequential installation of containers as per confluence page - https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
 
-- Also, This script handles re-run environment very effectively by cleaning old images/containers, files created, etc.
-- Approximately, It takes around 3-4 days to set this service for a first time user and around 30 min for a practioner. 
+2. Also, This script handles pre-re-run environment of LinSEE host very effectively by cleaning old images/containers, logs directory, etc.
+3. Approximately, It takes around 3-4 days to set this service for a first time user and around 30 min for a practioner. 
   This script does this in 5 minutes for both kind of users.
 
 Approach:
@@ -42,13 +42,13 @@ Approach:
 
 Benefits:
 ---------
-- Fresh installation every-time takes around 5 minutes.
-- No missing steps or incorrect configuration done.
-- Installation as per the confluence page.
-- Well tested for reliability for quick installation by any user.
-- Logs provide detailed installation procedure and we can point out errors if any.
+1. Fresh installation every-time takes around 5 minutes.
+2. No missing steps or incorrect configuration done.
+3. Installation as per the confluence page.
+4. Well tested for reliability for quick installation by any user.
+5. Logs provide detailed installation procedure and we can point out errors if any.
 
 Limitations
 -----------
-- Currently, Script runs well only on Windows machines, Linux support will be added later.
-- Script is developed using python 3.9 and needs python versions >=3.7; hence lacks support for python 2.x versions, which are officially deprecated by today.
+1. Currently, Script runs well only on Windows machines, Linux support will be added later.
+2. Script is developed using python 3.9 and needs python versions >=3.7; hence lacks support for python 2.x versions, which are officially deprecated by today.
