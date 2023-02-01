@@ -1,6 +1,8 @@
 Automatic deployment of Zuul service on Linsee servers.
 ========================================================
 
+.. image:: https://www.google.com/url?sa=i&url=https%3A%2F%2Fsdtimes.com%2Fcicd%2Fcicd-platform-zuul-version-3-released%2F&psig=AOvVaw0o0O-e5UXfTgbGCoHeMuKE&ust=1675321405581000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCJCLp9zg8_wCFQAAAAAdAAAAABAE
+
 Prerequisties:
 --------------
 1. Install project by cloning the repo and navigate to setup.py path[``cd mn_scripts\tools\zuul_service_setup``] and do ``pip install zuul_setup`` (disconnect vpn to install packages)
@@ -15,17 +17,16 @@ Prerequisties:
 
 Need:
 -----
-1. Its Very difficult for a new joiner for setting up zuul service in one or two attempts, since there are lot of checkpoints in between apart 
-  from sequential installation of containers as per confluence page - https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
+1. Its very difficult for a new joiner for setting up zuul service in one or two attempts, since there are lot of checkpoints in between apart 
+   from sequential installation of containers as per confluence page - https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
 
 2. Also, This script handles pre-re-run environment of LinSEE host very effectively by cleaning old images/containers, logs directory, etc.
-3. Approximately, It takes around 3-4 days to set this service for a first time user and around 30 min for a practioner. 
-  This script does this in 5 minutes for both kind of users.
+3. Approximately, It takes around 3-4 days to set this service for a first time user and around 30 min for a practioner.  
+   This script does this in 5 minutes for both kind of users.
 
 Approach:
 ---------
 1. Automates Steps described for zuul service setup in https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
-
 2. Installs 6 containers sequentially.
 3. Apart from just installing containers, this script takes off the burden of manual activities like:
   - creation of database on mysql server container
