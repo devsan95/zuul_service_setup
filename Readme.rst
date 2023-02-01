@@ -1,7 +1,7 @@
 Automatic deployment of Zuul service on Linsee servers.
 ========================================================
 
-.. image:: https://www.google.com/url?sa=i&url=https%3A%2F%2Fsdtimes.com%2Fcicd%2Fcicd-platform-zuul-version-3-released%2F&psig=AOvVaw0o0O-e5UXfTgbGCoHeMuKE&ust=1675321405581000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCJCLp9zg8_wCFQAAAAAdAAAAABAE
+.. image:: https://sdtimes.com/wp-content/uploads/2018/05/DdvCx-dU8AABSAL-490x387.jpg
 
 Prerequisties:
 --------------
