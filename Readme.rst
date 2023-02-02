@@ -5,15 +5,22 @@ Automatic deployment of Zuul service on Linsee servers.
 
 Prerequisties:
 --------------
-1. Install project by cloning the repo and navigate to setup.py path[``cd mn_scripts\tools\zuul_service_setup``] and do ``pip install zuul_setup`` (disconnect vpn to install packages)
-2. Must be Connected to NOKIA VPN from here on (after step 1 in Prerequisties) i,e. start of script run to end of its execution.
-3. Provide following details:
+1. Run this project from Windows machine only.
+2. Install project by cloning the repo [Gerrit Link: ``Will be updated once merged.``] and
+   navigate to setup.py path[``cd zuul_setup/src``] and do ``pip install -e .`` (disconnect vpn to install packages)
+3. Must be Connected to NOKIA VPN from here on (after step 1 in Prerequisties) i,e. start of script run to end of its execution.
+4. Provide following details:
     - your Linsee machine, gerrit, database details in config.yaml file
     - host and port values in GearmanPluginConfig.xml file
     - details in zuul.conf and zuul_conf_merger.conf
     - details in layout.yaml
-4. Run Script after ``cd mn_scripts/tools/zuul_service_setup/src/zuul_setup``
-5. Run command for script: ``python script.py``
+5. Run Script after ``cd zuul_setup/src/zuul_setup``
+6. Run command for script: ``python zuul_setup.py``
+7. Please open the following ports.
+      - 3306 for zuul mysql
+      - 80 for zuul webpage
+      - 4730 for gearman
+      - 8022 for container ssh connection (optional)
 
 Need:
 -----
@@ -29,16 +36,16 @@ Approach:
 1. Automates Steps described for zuul service setup in https://confluence.ext.net.nokia.com/pages/viewpage.action?pageId=1027891609
 2. Installs 6 containers sequentially.
 3. Apart from just installing containers, this script takes off the burden of manual activities like:
-  - creation of database on mysql server container
-  - adding jenkins jobs
-  - uploading gerrit public keys of 3 peers(for LinSEE host, zuul and merger container)
-  - installing gearman plugin in jenkins and configuring its port.
-  - checking health of services inside container
-  - upgrading zuul version to latest mentioned
-  - displaying all containers status
-  - cleans all images/container before running script
-  - creates new log directory ephermal everytime for smooth installation
-  - configures LinSEE machine git to cache gerrit credentials to avoid repetetive prompts of login credentials
+      - creation of database on mysql server container
+      - adding jenkins jobs
+      - uploading gerrit public keys of 3 peers(for LinSEE host, zuul and merger container)
+      - installing gearman plugin in jenkins and configuring its port.
+      - checking health of services inside container
+      - upgrading zuul version to latest mentioned
+      - displaying all containers status
+      - cleans all images/container before running script
+      - creates new log directory ephermal everytime for smooth installation
+      - configures LinSEE machine git to cache gerrit credentials to avoid repetetive prompts of login credentials
 4. Detailed Execution log at Log_file.log can be used for debugging.
 
 Benefits:
@@ -51,5 +58,7 @@ Benefits:
 
 Limitations
 -----------
-1. Currently, Script runs well only on Windows machines, Linux support will be added later.
+1. Currently, Script is run from Windows machines, where we connect to LinSEE host using SSH protocol and trigger all docker commands on this LinSEE machine. 
+   Support for running script from Linux or LinSEE machine will be added later.
 2. Script is developed using python 3.9 and needs python versions >=3.7; hence lacks support for python 2.x versions, which are officially deprecated by today.
+
