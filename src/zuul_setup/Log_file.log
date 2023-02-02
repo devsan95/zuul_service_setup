@@ -1,0 +1,111 @@
+2023-02-01 21:35:41,761:INFO: Connected (version 2.0, client OpenSSH_7.4)
+2023-02-01 21:35:42,790:INFO: Authentication (publickey) successful!
+2023-02-01 21:35:42,791:INFO: Performing fresh installation of all containers from scratch..
+2023-02-01 21:35:42,792:INFO: Cleaning existing containers and images..
+2023-02-01 21:36:04,299:INFO: Successfully cleaned all images & containers.
+2023-02-01 21:36:04,410:INFO: Checking docker setup now..
+2023-02-01 21:36:04,920:INFO: Found existing docker. Skipping docker installation.
+2023-02-01 21:36:05,723:INFO: Logging in image registries esisoj70 & artifactory-espoo1.
+2023-02-01 21:36:06,297:INFO: Log in Ok for esisoj70 registry
+2023-02-01 21:36:06,950:INFO: Log in Ok for artifactory-espoo1 registry
+2023-02-01 21:36:14,278:INFO: Successfully uploaded config files to host.
+2023-02-01 21:36:14,394:INFO: Removing existing /ephermal directory if present..
+2023-02-01 21:36:15,086:INFO: Successfully removed existing workspace /ephermal.
+2023-02-01 21:36:15,086:INFO: Creating new workspace /ephermal ...
+2023-02-01 21:36:25,706:INFO: Generating gerrit SSH keys for host..
+2023-02-01 21:36:27,456:INFO: Successfully generated gerrit SSH keys for host.
+2023-02-01 21:36:37,368:INFO: Successfully uploaded config files to host.
+2023-02-01 21:36:37,490:INFO: Installing Mysql container..
+2023-02-01 21:36:51,095:INFO: Successfully installed Mysql.
+2023-02-01 21:36:54,458:INFO: Successfully copied query.sql to mysql.
+2023-02-01 21:36:55,088:INFO: Successfully created database in mysql server.
+2023-02-01 21:36:55,203:INFO: Installing Zuul container now..
+2023-02-01 21:37:56,987:INFO: Installed zuul container.
+2023-02-01 21:37:56,987:INFO: Configuring zuul container..
+2023-02-01 21:37:56,987:INFO: Generating gerrit SSH keys for zuul-server..
+2023-02-01 21:37:59,017:INFO: Successfully generated gerrit SSH keys for zuul-server.
+2023-02-01 21:38:01,174:INFO: b''
+2023-02-01 21:38:02,379:INFO: b'Found existing installation: zuul 1.7.7.dev1\nUninstalling zuul-1.7.7.dev1:\n  Successfully uninstalled zuul-1.7.7.dev1\n'
+2023-02-01 21:38:07,594:INFO: b'Processing /root/zuul\nRequirement already satisfied: jenkins-job-builder<2.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.6.2)\nRequirement already satisfied: pbr>=1.1.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (5.5.1)\nRequirement already satisfied: PyYAML>=3.1.0 in /usr/lib64/python2.7/site-packages (from zuul==1.7.7.dev1) (5.4.1)\nRequirement already satisfied: paramiko<2.0.0,>=1.8.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.18.5)\nRequirement already satisfied: gitdb2==2.0.6 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.0.6)\nRequirement already satisfied: GitPython<2.1.2,>=0.3.3 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.1.1)\nRequirement already satisfied: ordereddict in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.1)\nRequirement already satisfied: python-daemon<2.1.0,>=2.0.4 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.0.6)\nRequirement already satisfied: extras in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.0.0)\nRequirement already satisfied: statsd<3.0,>=1.0.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.1.2)\nRequirement already satisfied: voluptuous>=0.11.1 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.12.1)\nRequirement already satisfied: gear<1.0.0,>=0.5.7 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.15.1)\nRequirement already satisfied: apscheduler>=3.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (3.7.0)\nRequirement already satisfied: PrettyTable<0.8,>=0.6 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.7.2)\nRequirement already satisfied: babel>=1.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.9.1)\nRequirement already satisfied: six>=1.6.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.16.0)\nRequirement already satisfied: sqlalchemy in /usr/lib64/python2.7/site-packages (from zuul==1.7.7.dev1) (1.4.15)\nRequirement already satisfied: alembic in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.5.8)\nRequirement already satisfied: requests in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.25.1)\nRequirement already satisfied: cachetools in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (3.1.1)\nRequirement already satisfied: pycrypto in /usr/lib64/python2.7/site-packages (from zuul==1.7.7.dev1) (2.6.1)\nRequirement already satisfied: prometheus_client in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.10.1)\nRequirement already satisfied: monotonic in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (1.6)\nRequirement already satisfied: ruamel.yaml in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.16.13)\nRequirement already satisfied: arrow==0.15.8 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.15.8)\nRequirement already satisfied: tzlocal in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.1)\nRequirement already satisfied: cherrypy in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (17.4.2)\nRequirement already satisfied: ws4py in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (0.5.1)\nRequirement already satisfied: routes in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (2.5.1)\nRequirement already satisfied: cheroot!=8.1.*,!=8.2.*,!=8.3.0 in /usr/lib/python2.7/site-packages (from zuul==1.7.7.dev1) (8.5.2)\nRequirement already satisfied: python-jenkins>=0.4.8 in /usr/lib/python2.7/site-packages (from jenkins-job-builder<2.0->zuul==1.7.7.dev1) (1.7.0)\nRequirement already satisfied: ecdsa<2.0,>=0.11 in /usr/lib/python2.7/site-packages (from paramiko<2.0.0,>=1.8.0->zuul==1.7.7.dev1) (0.16.1)\nRequirement already satisfied: smmap2>=2.0.0 in /usr/lib/python2.7/site-packages (from gitdb2==2.0.6->zuul==1.7.7.dev1) (3.0.1)\nRequirement already satisfied: setuptools in /usr/lib/python2.7/site-packages (from python-daemon<2.1.0,>=2.0.4->zuul==1.7.7.dev1) (44.1.1)\nRequirement already satisfied: docutils in /usr/lib/python2.7/site-packages (from python-daemon<2.1.0,>=2.0.4->zuul==1.7.7.dev1) (0.17.1)\nRequirement already satisfied: lockfile>=0.10 in /usr/lib/python2.7/site-packages (from python-daemon<2.1.0,>=2.0.4->zuul==1.7.7.dev1) (0.12.2)\nRequirement already satisfied: funcsigs; python_version < "3.5" in /usr/lib/python2.7/site-packages (from apscheduler>=3.0->zuul==1.7.7.dev1) (1.0.2)\nRequirement already satisfied: futures; python_version == "2.7" in /usr/lib/python2.7/site-packages (from apscheduler>=3.0->zuul==1.7.7.dev1) (3.3.0)\nRequirement already satisfied: pytz in /usr/lib/python2.7/site-packages (from apscheduler>=3.0->zuul==1.7.7.dev1) (2021.1)\nRequirement already satisfied: importlib-metadata; python_version < "3.8" in /usr/lib/python2.7/site-packages (from sqlalchemy->zuul==1.7.7.dev1) (2.1.1)\nRequirement already satisfied: python-dateutil in /usr/lib/python2.7/site-packages (from alembic->zuul==1.7.7.dev1) (1.5)\nRequirement already satisfied: python-editor>=0.3 in /usr/lib/python2.7/site-packages (from alembic->zuul==1.7.7.dev1) (1.0.4)\nRequirement already satisfied: Mako in /usr/lib/python2.7/site-packages (from alembic->zuul==1.7.7.dev1) (1.1.4)\nRequirement already satisfied: chardet<5,>=3.0.2 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (4.0.0)\nRequirement already satisfied: urllib3<1.27,>=1.21.1 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (1.26.4)\nRequirement already satisfied: idna<3,>=2.5 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (2.10)\nRequirement already satisfied: certifi>=2017.4.17 in /usr/lib/python2.7/site-packages (from requests->zuul==1.7.7.dev1) (2020.12.5)\nRequirement already satisfied: ruamel.ordereddict; platform_python_implementation == "CPython" and python_version <= "2.7" in /usr/lib64/python2.7/site-packages (from ruamel.yaml->zuul==1.7.7.dev1) (0.4.15)\nRequirement already satisfied: ruamel.yaml.clib>=0.1.2; platform_python_implementation == "CPython" and python_version < "3.10" in /usr/lib64/python2.7/site-packages (from ruamel.yaml->zuul==1.7.7.dev1) (0.2.2)\nRequirement already satisfied: backports.functools-lru-cache>=1.2.1; python_version == "2.7" in /usr/lib/python2.7/site-packages (from arrow==0.15.8->zuul==1.7.7.dev1) (1.6.4)\nRequirement already satisfied: portend>=2.1.1 in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (2.6)\nRequirement already satisfied: more-itertools in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (5.0.0)\nRequirement already satisfied: zc.lockfile in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (2.0)\nRequirement already satisfied: contextlib2 in /usr/lib/python2.7/site-packages (from cherrypy->zuul==1.7.7.dev1) (0.6.0.post1)\nRequirement already satisfied: repoze.lru>=0.3 in /usr/lib/python2.7/site-packages (from routes->zuul==1.7.7.dev1) (0.7)\nRequirement already satisfied: selectors2; python_version < "3.4" in /usr/lib/python2.7/site-packages (from cheroot!=8.1.*,!=8.2.*,!=8.3.0->zuul==1.7.7.dev1) (2.0.2)\nRequirement already satisfied: jaraco.functools in /usr/lib/python2.7/site-packages (from cheroot!=8.1.*,!=8.2.*,!=8.3.0->zuul==1.7.7.dev1) (2.0)\nRequirement already satisfied: multi-key-dict in /usr/lib/python2.7/site-packages (from python-jenkins>=0.4.8->jenkins-job-builder<2.0->zuul==1.7.7.dev1) (2.0.3)\nRequirement already satisfied: smmap>=3.0.1 in /usr/lib/python2.7/site-packages (from smmap2>=2.0.0->gitdb2==2.0.6->zuul==1.7.7.dev1) (3.0.5)\nRequirement already satisfied: pathlib2; python_version < "3" in /usr/lib/python2.7/site-packages (from importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (2.3.5)\nRequirement already satisfied: zipp>=0.5 in /usr/lib/python2.7/site-packages (from importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (1.2.0)\nRequirement already satisfied: configparser>=3.5; python_version < "3" in /usr/lib/python2.7/site-packages (from importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (4.0.2)\nRequirement already satisfied: MarkupSafe>=0.9.2 in /usr/lib64/python2.7/site-packages (from Mako->alembic->zuul==1.7.7.dev1) (1.1.1)\nRequirement already satisfied: tempora>=1.8 in /usr/lib/python2.7/site-packages (from portend>=2.1.1->cherrypy->zuul==1.7.7.dev1) (1.14.1)\nRequirement already satisfied: scandir; python_version < "3.5" in /usr/lib64/python2.7/site-packages (from pathlib2; python_version < "3"->importlib-metadata; python_version < "3.8"->sqlalchemy->zuul==1.7.7.dev1) (1.10.0)\nBuilding wheels for collected packages: zuul\n  Building wheel for zuul (setup.py): started\n  Building wheel for zuul (setup.py): finished with status \'done\'\n  Created wheel for zuul: filename=zuul-1.7.7.dev1-py2-none-any.whl size=188776 sha256=6168e709b1fd76d49902073aeb11439b60aef8dc617a08e1b45b9098b97dab28\n  Stored in directory: /tmp/pip-ephem-wheel-cache-bhi5UI/wheels/89/08/e2/a52c8af5a93d5f1363833f61e3460cbe8abfe6ffc624cd7dac\nSuccessfully built zuul\nInstalling collected packages: zuul\nSuccessfully installed zuul-1.7.7.dev1\n'
+2023-02-01 21:38:08,253:INFO: b''
+2023-02-01 21:38:09,276:INFO: Skipping zuul folder creation in /etc as it exists.
+2023-02-01 21:38:13,643:INFO: Working on Copying basic Zuul.conf and basic layout to zuul container.
+2023-02-01 21:38:14,749:INFO: Successfully copied zuul.conf and layout.yaml to zuul container.
+2023-02-01 21:38:15,684:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:18,433:INFO: Current Zuul Version is 1.7.7
+2023-02-01 21:38:18,433:INFO: Upgrading Zuul to latest verison-2.0.1..
+2023-02-01 21:38:20,095:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:20,953:INFO: Current Zuul Version is 1.7.7
+2023-02-01 21:38:20,953:INFO: Upgrading Zuul to latest verison-2.0.1..
+2023-02-01 21:38:22,581:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:23,513:INFO: Current Zuul Version is 1.7.7
+2023-02-01 21:38:23,513:INFO: Upgrading Zuul to latest verison-2.0.1..
+2023-02-01 21:38:24,811:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:25,721:INFO: Current Zuul Version is 1.7.7
+2023-02-01 21:38:25,721:INFO: Upgrading Zuul to latest verison-2.0.1..
+2023-02-01 21:38:27,328:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:28,327:INFO: Current Zuul Version is 1.7.7
+2023-02-01 21:38:28,327:INFO: Upgrading Zuul to latest verison-2.0.1..
+2023-02-01 21:38:29,679:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:30,660:INFO: Current Zuul Version is 1.7.7
+2023-02-01 21:38:30,660:INFO: Upgrading Zuul to latest verison-2.0.1..
+2023-02-01 21:38:31,977:INFO: Chekcing for Zuul upgrade..
+2023-02-01 21:38:32,852:INFO: Current Zuul Version is 2.0.1
+2023-02-01 21:38:32,852:INFO: Zuul version is up to date.
+2023-02-01 21:38:32,852:INFO: Successfully configured zuul container.
+2023-02-01 21:38:32,953:INFO: Installing Merger container now.. 
+2023-02-01 21:39:28,165:INFO: Successfully installed merger.
+2023-02-01 21:39:28,174:INFO: Generating gerrit SSH keys for merger..
+2023-02-01 21:39:29,812:INFO: Successfully generated gerrit SSH keys for merger.
+2023-02-01 21:39:29,812:INFO: Copying zuul.conf and layout.yaml for merger container.
+2023-02-01 21:39:30,787:INFO: Successfully copied zuul.conf and layout.yaml to merger
+2023-02-01 21:39:31,445:INFO: Successfully configured Merger container.
+2023-02-01 21:39:31,550:INFO: Installing gearman container now..
+2023-02-01 21:39:57,153:INFO: Successfully installed gearman.
+2023-02-01 21:39:57,263:INFO: Installing Jenkins container now..
+2023-02-01 21:40:14,205:INFO: Successfully installed jenkins.
+2023-02-01 21:40:14,314:INFO: Installing gerrit container now..
+2023-02-01 21:40:25,413:INFO: Successfully installed gerrit.
+2023-02-01 21:40:28,950:INFO: Displaying all containers 
+b'gerrit  Up 3 seconds
+jenkins  Up 14 seconds
+gearman  Up 31 seconds
+merger  Up About a minute
+zuul-server  Up 2 minutes
+mysql  Up 3 minutes
+'
+2023-02-01 21:40:29,055:INFO: Configuring Jenkins now..
+2023-02-01 21:40:29,055:INFO: Installing Gearman Plugin in jenkins..
+2023-02-01 21:40:39,137:INFO: Successfully installed plugin-gearman in jenkins.
+2023-02-01 21:40:39,743:INFO: Successfully copied GearmanPluginConfig to jenkins
+2023-02-01 21:40:39,743:INFO: Restarting Jenkins..
+2023-02-01 21:40:55,362:INFO: Restarted Jenkins, Gearman plugin enabled.
+2023-02-01 21:40:55,362:INFO: Getting jenkins initial admin password for reference..
+2023-02-01 21:40:55,736:INFO: Jenkins Admin Password is :52fe8f74cb324430b33fea99f76cd836
+2023-02-01 21:40:55,736:INFO: Trying to connect jenkins running on linux host..
+2023-02-01 21:40:55,736:INFO: Successfully connected to Jenkins.
+2023-02-01 21:40:55,736:INFO: Adding 3 Jenkins Jobs, each sleeping for 60 sec..
+2023-02-01 21:41:02,387:INFO: Trying to connect jenkins running on linux host..
+2023-02-01 21:41:02,388:INFO: Successfully connected to Jenkins.
+2023-02-01 21:41:02,388:INFO: Adding 3 Jenkins Jobs, each sleeping for 60 sec..
+2023-02-01 21:41:08,162:INFO: Trying to connect jenkins running on linux host..
+2023-02-01 21:41:08,162:INFO: Successfully connected to Jenkins.
+2023-02-01 21:41:08,162:INFO: Adding 3 Jenkins Jobs, each sleeping for 60 sec..
+2023-02-01 21:41:09,961:INFO: Added Jenkins jobs.
+2023-02-01 21:41:09,961:INFO: Jenkins configuration done.
+2023-02-01 21:41:10,568:INFO: Successfully added gerrit public ssh key for host.
+2023-02-01 21:41:10,840:INFO: Successfully added gerrit public ssh key for zuul.
+2023-02-01 21:41:11,120:INFO: Successfully added gerrit public ssh key for merger.
+2023-02-01 21:41:11,120:INFO: Now, After adding ssh keys, Restarting services of zuul & merger.
+2023-02-01 21:41:27,154:INFO: Status of zuul-server Services:
+b'httpd                            RUNNING   pid 970, uptime 0:00:14
+zuul-launcher                    RUNNING   pid 969, uptime 0:00:14
+zuul-server                      RUNNING   pid 1007, uptime 0:00:12
+'
+2023-02-01 21:41:43,334:INFO: Status of merger Services:
+b'httpd                            RUNNING   pid 103, uptime 0:00:04
+sshd                             RUNNING   pid 104, uptime 0:00:04
+zuul-merger                      RUNNING   pid 105, uptime 0:00:04
+'
+2023-02-01 21:41:43,334:INFO: FINISHED: Zuul setup process
+2023-02-01 21:41:43,455:INFO: Zuul Setup automation has taken : 6.01 minutes

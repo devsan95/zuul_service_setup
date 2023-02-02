@@ -1,0 +1,4 @@
+
+*.pyc
+
+src/zuul_setup.egg-info/

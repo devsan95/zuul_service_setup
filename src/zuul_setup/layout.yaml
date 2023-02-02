@@ -2,7 +2,7 @@ pipelines:
  - name: check
    description: Check pipeline.
    failure-message: Check failed.
-   start-message: Starting check jobs. Please check zuul status page http://10.157.2.88/.
+   start-message: Starting check jobs. Please check zuul status page http://LinSEE_IP/.
    manager: IndependentPipelineManager
    precedence: low
    require:
@@ -26,7 +26,7 @@ pipelines:
  - name: gate
    description: Gate pipeline.
    failure-message: Gate failed.
-   start-message: Starting gate jobs. Please check zuul status page http://10.157.2.88/.
+   start-message: Starting gate jobs. Please check zuul status page http://LinSEE_IP/.
    manager: DependentPipelineManager
    precedence: normal
    require:
@@ -65,7 +65,7 @@ pipelines:
    description: Post pipeline.
    success-message: Post successful.
    failure-message: Post failed.
-   start-message: Starting post jobs. Please check zuul status page http://10.157.2.88/.
+   start-message: Starting post jobs. Please check zuul status page http://LinSEE_IP/.
    manager: IndependentPipelineManager
    precedence: normal
    require:
@@ -85,8 +85,8 @@ pipelines:
 projects:
 - name: pipeline_demo
   check:
-  - job_1
+  - job1
   gate:
-  - job_2
+  - job2
   post:
-  - job_3
+  - job3

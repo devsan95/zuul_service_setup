@@ -1,0 +1,4 @@
+api4jenkins
+PyYAML
+paramiko
+scp

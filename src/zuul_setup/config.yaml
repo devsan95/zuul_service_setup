@@ -1,0 +1,22 @@
+linux_host:
+  - ip: 10.157.3.252
+  - user: root
+  - password: Santosh@123
+  - port: 22
+  - type: Linsee  # Linsee or Cloud
+
+database:
+  - name: test_zuul
+  - user: root
+  - password: 5gzuul_pwd
+  - port: 3306
+
+gerrit:
+  - user: vagga
+  - password: cqr$djG5
+  - url: http://gerrit-code.zuulqa.dynamic.nsn-net.net
+  - project: pipeline_demo
+  - reviewer: santoshkumar.vagga@nokia.com
+
+zuul:
+  - img_version_tag: 2.0.1
